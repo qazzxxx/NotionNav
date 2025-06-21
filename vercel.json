@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    {
+      "source": "/bing/(.*)",
+      "destination": "https://cn.bing.com/$1"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
