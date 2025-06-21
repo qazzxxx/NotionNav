@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  allowedDevOrigins: ['view.qazz.site'],
+  allowedDevOrigins: ["view.qazz.site"],
 };
 
 export default nextConfig;
