@@ -1,5 +1,5 @@
 {
-  "name": "alpinia",
+  "name": "nnav",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,6 +11,8 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "next": "15.2.3",
+    "notion-client": "7.3.0",
+    "notion-utils": "7.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
