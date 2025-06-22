@@ -15,7 +15,6 @@ export const SearchSuggestions = ({
   searchValue,
   menuItems,
   userRole,
-  isLan,
   onSelectItem,
   visible,
 }: SearchSuggestionsProps) => {
