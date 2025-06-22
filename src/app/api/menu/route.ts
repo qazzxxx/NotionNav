@@ -8,13 +8,12 @@ const api = new NotionAPI();
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const databaseId =
-      searchParams.get("databaseId") || NOTION_CONFIG.DEFAULT_DATABASE_ID;
+    const pageId = searchParams.get("pageId") || NOTION_CONFIG.DEFAULT_PAGE_ID;
 
-    console.log("Fetching database with ID:", databaseId);
+    console.log("Fetching database with ID:", pageId);
 
     // fetch database content
-    const database = await api.getPage(databaseId);
+    const database = await api.getPage(pageId);
 
     console.log("Database structure:");
     console.log("Database keys:", Object.keys(database));

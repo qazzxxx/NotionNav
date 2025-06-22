@@ -12,15 +12,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "密码不能为空" }, { status: 400 });
     }
 
-    const databaseId =
-      process.env.NOTION_DATABASE_ID || NOTION_CONFIG.DEFAULT_DATABASE_ID;
+    const pageId = process.env.NOTION_PAGE_ID || NOTION_CONFIG.DEFAULT_PAGE_ID;
 
-    if (!databaseId) {
-      return NextResponse.json({ error: "数据库ID未配置" }, { status: 500 });
+    if (!pageId) {
+      return NextResponse.json({ error: "页面ID未配置" }, { status: 500 });
     }
 
     // 获取数据库内容
-    const database = await api.getPage(databaseId);
+    const database = await api.getPage(pageId);
 
     // 提取所有角色
     const allRoles = new Set<string>();

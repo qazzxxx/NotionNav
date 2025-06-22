@@ -2,6 +2,8 @@
 
 一个基于 Next.js 和 Notion 数据库的现代化导航页面，支持动态菜单管理、权限控制、搜索功能和登录验证。
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/nnav&env=NOTION_PAGE_ID&envDescription=Notion%20Page%20ID&envLink=https://github.com/yourusername/nnav%23environment-configuration)
+
 ## ✨ 功能特性
 
 - 🎯 **动态菜单管理** - 通过 Notion 数据库实时管理菜单项
@@ -16,13 +18,37 @@
 
 ## 🚀 快速开始
 
-### 环境要求
+### 方式一：一键部署到 Vercel（推荐）
+
+1. **点击部署按钮**
+
+   点击上方的 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/nnav&env=NOTION_PAGE_ID&envDescription=Notion%20Page%20ID&envLink=https://github.com/yourusername/nnav%23environment-configuration) 按钮
+
+2. **配置环境变量**
+
+   在 Vercel 部署页面中，需要配置以下环境变量：
+
+   - `NOTION_PAGE_ID`: 你的 Notion 页面 ID
+
+3. **获取 Notion 页面 ID**
+
+   - 打开你的 Notion 页面或数据库页面
+   - 复制页面 URL
+   - 提取页面 ID 部分
+
+4. **完成部署**
+
+   点击 "Deploy" 按钮，等待部署完成即可访问你的导航页面
+
+### 方式二：本地开发
+
+#### 环境要求
 
 - Node.js 18+
 - npm/yarn/pnpm
-- Notion 账户和 API 密钥
+- Notion 账户
 
-### 安装依赖
+#### 安装依赖
 
 ```bash
 npm install
@@ -32,27 +58,23 @@ yarn install
 pnpm install
 ```
 
-### 环境配置
+#### 环境配置
+
+> 📖 **详细配置说明**：查看 [ENV_SETUP.md](./ENV_SETUP.md) 获取完整的环境变量配置指南。
 
 1. 在项目根目录创建 `.env.local` 文件：
 
 ```env
-NOTION_TOKEN=your_integration_token_here
-NOTION_DATABASE_ID=your_database_id_here
+NOTION_PAGE_ID=your_page_id_here
 ```
 
-2. 获取 Notion API 密钥：
+2. 获取 Notion 页面 ID：
 
-   - 访问 [Notion Developers](https://developers.notion.com/)
-   - 创建新的集成
-   - 复制 Integration Token
+   - 打开你的 Notion 页面或数据库页面
+   - 复制页面 URL
+   - 提取页面 ID 部分
 
-3. 配置数据库权限：
-   - 在 Notion 数据库页面点击 "Share"
-   - 添加你的集成到数据库
-   - 确保集成有 "Read content" 权限
-
-### 启动开发服务器
+#### 启动开发服务器
 
 ```bash
 npm run dev
@@ -64,7 +86,90 @@ pnpm dev
 
 打开 [http://localhost:3000](http://localhost:3000) 查看结果。
 
-## 📊 Notion 数据库设置
+## 🌐 部署指南
+
+> 📖 **详细部署说明**：查看 [DEPLOYMENT.md](./DEPLOYMENT.md) 获取完整的部署指南和故障排除信息。
+
+### Vercel 部署
+
+#### 自动部署（推荐）
+
+1. **Fork 项目**
+
+   在 GitHub 上 Fork 本项目到你的账户
+
+2. **修改部署链接**
+
+   将 README 中的部署链接中的 `yourusername` 替换为你的 GitHub 用户名
+
+3. **一键部署**
+
+   点击部署按钮，按照提示配置环境变量即可
+
+#### 手动部署
+
+1. **导入项目**
+
+   在 [Vercel Dashboard](https://vercel.com/dashboard) 中点击 "New Project"
+
+2. **连接 GitHub**
+
+   选择你的 GitHub 仓库或直接导入项目
+
+3. **配置环境变量**
+
+   在项目设置中添加以下环境变量：
+
+   ```
+   NOTION_PAGE_ID=your_page_id_here
+   ```
+
+4. **部署**
+
+   点击 "Deploy" 按钮完成部署
+
+### 其他平台部署
+
+#### Netlify
+
+1. 连接 GitHub 仓库
+2. 构建命令：`npm run build`
+3. 发布目录：`.next`
+4. 环境变量配置同 Vercel
+
+#### Railway
+
+1. 连接 GitHub 仓库
+2. 自动检测 Next.js 项目
+3. 配置环境变量
+4. 自动部署
+
+### 环境变量说明
+
+| 变量名           | 必需 | 说明           |
+| ---------------- | ---- | -------------- |
+| `NOTION_PAGE_ID` | ✅   | Notion 页面 ID |
+
+### 域名配置
+
+部署完成后，你可以：
+
+1. **使用 Vercel 默认域名**
+
+   - 格式：`your-project.vercel.app`
+   - 自动 HTTPS 支持
+
+2. **配置自定义域名**
+
+   - 在 Vercel Dashboard 中添加自定义域名
+   - 支持 CNAME 和 A 记录配置
+   - 自动 SSL 证书
+
+3. **配置重定向**
+   - 支持 www 到非 www 重定向
+   - 支持 HTTP 到 HTTPS 重定向
+
+## 📊 Notion 页面/数据库设置
 
 ### 数据库结构
 
@@ -93,9 +198,9 @@ status: "显示"
 category: "开发工具"
 ```
 
-### 数据库设置步骤
+### 页面/数据库设置步骤
 
-1. **创建新数据库**
+1. **创建新页面或数据库**
 
    - 在 Notion 中点击 `+ New` 按钮
    - 选择 `Table` 或 `Database`
@@ -107,16 +212,16 @@ category: "开发工具"
    - 按照上表配置每个属性列
    - 确保属性类型正确
 
-3. **获取数据库 ID**
-   - 复制数据库页面的 URL
-   - 提取数据库 ID 部分
-   - 更新环境变量中的 `NOTION_DATABASE_ID`
+3. **获取页面 ID**
+   - 复制页面或数据库页面的 URL
+   - 提取页面 ID 部分
+   - 更新环境变量中的 `NOTION_PAGE_ID`
 
 ## 🔧 核心功能
 
 ### 1. 动态菜单管理
 
-- 通过 Notion 数据库实时管理菜单项
+- 通过 Notion 页面实时管理菜单项
 - 支持添加、修改、删除菜单项
 - 无需重新部署应用
 
@@ -142,7 +247,7 @@ category: "开发工具"
 
 ### 5. 登录验证
 
-- 使用数据库中的 Roles 字段作为登录密码
+- 使用页面中的 Roles 字段作为登录密码
 - 实时验证用户权限
 - 支持多角色登录
 - 安全的 API 验证机制
@@ -201,7 +306,7 @@ nnav/
 
 访问 `/test-auth` 页面可以测试登录功能：
 
-- 使用 Notion 数据库中的 Roles 值作为密码
+- 使用 Notion 页面中的 Roles 值作为密码
 - 验证登录成功后的角色显示
 - 测试不同角色的权限控制
 - 重新锁定功能测试
@@ -236,7 +341,7 @@ curl -X POST http://localhost:3000/api/auth \
 
    - 检查 status 字段是否为 "显示" 或 "active"
    - 确认用户角色权限配置
-   - 验证数据库共享设置
+   - 验证页面共享设置
 
 2. **搜索无结果**
 
@@ -246,30 +351,76 @@ curl -X POST http://localhost:3000/api/auth \
 
 3. **登录验证失败**
 
-   - 确认 Notion 数据库中有 Roles 字段
+   - 确认 Notion 页面中有 Roles 字段
    - 检查 Roles 字段的值是否正确设置
    - 验证 API 连接是否正常
    - 查看浏览器控制台错误信息
 
 4. **API 错误**
+
    - 检查环境变量配置
-   - 确认 Notion Token 有效
-   - 验证数据库 ID 正确
+   - 验证页面 ID 是否正确
+
+5. **部署失败**
+
+   - 检查环境变量是否正确配置
+   - 确认 GitHub 仓库权限设置
+   - 验证页面 ID 格式
+   - 查看 Vercel 构建日志
+
+6. **Vercel 部署问题**
+   - 确保环境变量在 Vercel Dashboard 中正确设置
+   - 检查构建日志中的错误信息
+   - 确认 Next.js 版本兼容性
+   - 验证 API 路由配置
 
 ### 调试工具
 
 - 访问 `/api/menu` 查看原始 API 响应
 - 访问 `/api/auth` 测试登录验证（POST 请求）
-- 访问 `/test-notion` 查看数据库连接状态
+- 访问 `/test-notion` 查看页面连接状态
 - 访问 `/test-auth` 测试登录功能
 - 访问 `/test-favorites` 测试收藏功能
+- 访问 `/test-status` 查看菜单项状态信息
 - 查看浏览器控制台获取详细错误信息
+
+### 部署检查清单
+
+在部署到 Vercel 之前，请确认：
+
+- [ ] Notion 页面已创建并配置
+- [ ] 页面已分享给需要的成员
+- [ ] 环境变量已正确配置
+- [ ] GitHub 仓库已 Fork 或克隆
+- [ ] 项目依赖已安装
+- [ ] 本地测试通过
+
+**💡 快速检查**：运行 `npm run deploy-check` 来自动检查部署配置是否正确。
+
+### 性能优化建议
+
+1. **Vercel 优化**
+
+   - 启用 Vercel Analytics
+   - 配置 CDN 缓存策略
+   - 使用 Vercel Edge Functions
+
+2. **Notion API 优化**
+
+   - 合理设置缓存时间
+   - 避免频繁的 API 调用
+   - 使用适当的错误重试机制
+
+3. **前端优化**
+   - 启用 Next.js 图片优化
+   - 配置适当的缓存策略
+   - 优化字体加载
 
 ## 🔧 高级配置
 
 ### 自定义角色管理
 
-1. 在 Notion 数据库中为菜单项设置不同的 Roles 值
+1. 在 Notion 页面中为菜单项设置不同的 Roles 值
 2. 这些值将自动成为可用的登录密码
 3. 系统会动态读取所有角色值
 4. 支持实时添加新角色而无需重启应用
@@ -280,7 +431,7 @@ curl -X POST http://localhost:3000/api/auth \
 - **qazz**: 管理员权限，可以访问所有菜单项
 - **自定义角色**: 可以设置特定的访问权限
 
-### 多数据库支持
+### 多页面/多数据库支持
 
 ```typescript
 export const NOTION_CONFIG = {

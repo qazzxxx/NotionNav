@@ -7,8 +7,7 @@ const api = new NotionAPI();
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const pageId =
-      searchParams.get("pageId") || NOTION_CONFIG.DEFAULT_DATABASE_ID;
+    const pageId = searchParams.get("pageId") || NOTION_CONFIG.DEFAULT_PAGE_ID;
 
     console.log("Testing Notion API with page ID:", pageId);
 

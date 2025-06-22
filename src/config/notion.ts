@@ -1,11 +1,11 @@
 // Notion配置
 export const NOTION_CONFIG = {
   // 默认数据库ID，你可以根据需要修改
-  DEFAULT_DATABASE_ID: "219692535678800fbefffd8ae6924454",
+  DEFAULT_PAGE_ID: "219692535678800fbefffd8ae6924454",
 
   // 如果有多个数据库，可以在这里配置
   DATABASES: {
-    MENU: "219692535678800fbefffd8ae6924454",
+    MENU: "menu-database-id",
     // 可以添加更多数据库
     // NEWS: "your-news-database-id",
     // TOOLS: "your-tools-database-id",

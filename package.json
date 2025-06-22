@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy-check": "node scripts/check-deployment.js"
   },
   "dependencies": {
     "lodash": "^4.17.21",

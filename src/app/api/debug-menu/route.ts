@@ -7,13 +7,12 @@ const api = new NotionAPI();
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const databaseId =
-      searchParams.get("databaseId") || NOTION_CONFIG.DEFAULT_DATABASE_ID;
+    const pageId = searchParams.get("pageId") || NOTION_CONFIG.DEFAULT_PAGE_ID;
 
-    console.log("Debug: Fetching database with ID:", databaseId);
+    console.log("Debug: Fetching database with ID:", pageId);
 
     // fetch database content
-    const database = await api.getPage(databaseId);
+    const database = await api.getPage(pageId);
 
     // 解析数据库内容，提取所有菜单项（包括隐藏的）
     const allItems = parseAllDatabaseItems(database);
