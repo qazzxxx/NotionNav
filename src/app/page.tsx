@@ -74,6 +74,9 @@ function HomeContent() {
     return !!role; // 有role参数时初始为验证中
   });
 
+  // 添加角色检查状态
+  const [isCheckingRoles, setIsCheckingRoles] = useState(true);
+
   // 使用自定义Hook管理收藏状态
   const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
 
@@ -127,11 +130,23 @@ function HomeContent() {
       setIsValidatingUrlRole(true);
       setIsLocked(false);
     } else {
-      // 没有role参数时，设置为锁定状态
-      setIsValidatingUrlRole(false);
-      setIsLocked(true);
+      // 没有role参数时，检查是否有角色限制
+      if (!_rolesLoading && notionRoles.length === 0) {
+        // 没有角色限制，直接解锁
+        console.log("没有角色限制，直接解锁");
+        setIsValidatingUrlRole(false);
+        setIsLocked(false);
+        setIsCheckingRoles(false);
+      } else if (!_rolesLoading && notionRoles.length > 0) {
+        // 有角色限制，设置为锁定状态
+        console.log("有角色限制，显示锁定组件");
+        setIsValidatingUrlRole(false);
+        setIsLocked(true);
+        setIsCheckingRoles(false);
+      }
+      // 如果还在加载中，保持检查状态
     }
-  }, [searchParams]);
+  }, [searchParams, _rolesLoading, notionRoles]);
 
   // URL角色验证逻辑
   useEffect(() => {
@@ -165,6 +180,25 @@ function HomeContent() {
       }, 1000); // 延迟1秒，让用户看到加载状态
     }
   }, [searchParams, notionRoles, _rolesLoading]);
+
+  // 检查是否需要显示锁定组件
+  useEffect(() => {
+    // 如果roles已加载完毕且没有任何角色限制，直接解锁
+    if (!_rolesLoading && notionRoles.length === 0) {
+      console.log("没有角色限制，直接解锁");
+      setIsLocked(false);
+      setIsValidatingUrlRole(false);
+      setIsCheckingRoles(false);
+    } else if (!_rolesLoading && notionRoles.length > 0) {
+      // 有角色限制，检查是否需要锁定
+      const role = searchParams.get("role");
+      if (!role) {
+        console.log("有角色限制且没有URL参数，显示锁定组件");
+        setIsLocked(true);
+        setIsCheckingRoles(false);
+      }
+    }
+  }, [_rolesLoading, notionRoles, searchParams]);
 
   /**
    * 处理语言切换
@@ -307,6 +341,17 @@ function HomeContent() {
         onWallpaperInfo={setWallpaperInfo}
       />
 
+      {/* 角色检查加载状态 */}
+      {isCheckingRoles && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 backdrop-blur-sm bg-black/10" />
+          <div className="relative z-10 p-8 rounded-2xl text-center">
+            <div className="animate-spin w-8 h-8 border-2 border-white/30 border-t-white rounded-full mx-auto mb-4"></div>
+            <p className="text-white/70 text-sm">正在检查权限设置...</p>
+          </div>
+        </div>
+      )}
+
       {/* URL角色验证加载状态 */}
       {isValidatingUrlRole && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -319,7 +364,9 @@ function HomeContent() {
       )}
 
       {/* 锁屏组件 - 只在未验证URL角色且锁定时显示 */}
-      {!isValidatingUrlRole && isLocked && <Lock onUnlock={handleUnlock} />}
+      {!isCheckingRoles && !isValidatingUrlRole && isLocked && (
+        <Lock onUnlock={handleUnlock} />
+      )}
 
       {/* 主要内容区域 */}
       <div
