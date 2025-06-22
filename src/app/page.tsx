@@ -37,6 +37,7 @@ function HomeContent() {
   // 使用Notion菜单Hook
   const {
     menuItems: notionMenuItems,
+    databaseMetadata,
     loading: notionLoading,
     error: notionError,
   } = useNotionMenu();
@@ -57,6 +58,29 @@ function HomeContent() {
 
   // 使用自定义Hook管理收藏状态
   const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
+
+  // 动态设置页面标题和favicon
+  useEffect(() => {
+    if (databaseMetadata.title) {
+      document.title = databaseMetadata.title;
+    }
+
+    if (databaseMetadata.icon) {
+      // 移除现有的favicon
+      const existingFavicon = document.querySelector('link[rel="icon"]');
+      if (existingFavicon) {
+        existingFavicon.remove();
+      }
+
+      // 添加新的favicon
+      const favicon = document.createElement("link");
+      favicon.rel = "icon";
+      favicon.href = databaseMetadata.icon.startsWith("http")
+        ? databaseMetadata.icon
+        : `data:image/svg+xml,${encodeURIComponent(databaseMetadata.icon)}`;
+      document.head.appendChild(favicon);
+    }
+  }, [databaseMetadata]);
 
   /**
    * 生成不同于当前值的随机数(0-3)

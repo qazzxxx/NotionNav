@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
 import { NavMenuItem } from "@/types";
 
+interface DatabaseMetadata {
+  title: string;
+  icon: string;
+}
+
 interface UseNotionMenuReturn {
   menuItems: NavMenuItem[];
+  databaseMetadata: DatabaseMetadata;
   loading: boolean;
   error: string | null;
   refetch: () => void;
@@ -10,6 +16,10 @@ interface UseNotionMenuReturn {
 
 export function useNotionMenu(databaseId?: string): UseNotionMenuReturn {
   const [menuItems, setMenuItems] = useState<NavMenuItem[]>([]);
+  const [databaseMetadata, setDatabaseMetadata] = useState<DatabaseMetadata>({
+    title: "导航页",
+    icon: "",
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,6 +45,9 @@ export function useNotionMenu(databaseId?: string): UseNotionMenuReturn {
       }
 
       setMenuItems(data.menuItems || []);
+      setDatabaseMetadata(
+        data.databaseMetadata || { title: "导航页", icon: "" }
+      );
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to fetch menu items"
@@ -55,6 +68,7 @@ export function useNotionMenu(databaseId?: string): UseNotionMenuReturn {
 
   return {
     menuItems,
+    databaseMetadata,
     loading,
     error,
     refetch,

@@ -22,9 +22,16 @@ export async function GET(request: NextRequest) {
     // 解析数据库内容，提取菜单项
     const menuItems = parseDatabaseToMenuItems(database);
 
-    console.log("Parsed menu items:", menuItems);
+    // 提取数据库元数据（标题和图标）
+    const databaseMetadata = extractDatabaseMetadata(database);
 
-    return NextResponse.json({ menuItems });
+    console.log("Parsed menu items:", menuItems);
+    console.log("Database metadata:", databaseMetadata);
+
+    return NextResponse.json({
+      menuItems,
+      databaseMetadata,
+    });
   } catch (error) {
     console.error("Error fetching from Notion:", error);
     return NextResponse.json(
@@ -211,4 +218,99 @@ function getPropertyValueByMapping(
   }
 
   return undefined;
+}
+
+// 提取数据库元数据（标题和图标）
+function extractDatabaseMetadata(database: any) {
+  const metadata = {
+    title: "导航页",
+    icon: "",
+  };
+
+  if (!database.block) {
+    console.log("No block data found for metadata extraction");
+    return metadata;
+  }
+
+  console.log("Extracting database metadata...");
+  console.log("Database block keys:", Object.keys(database.block));
+
+  // 查找数据库页面本身
+  for (const blockId of Object.keys(database.block)) {
+    const block = database.block[blockId];
+
+    console.log(`Checking block ${blockId}:`, block.value?.type);
+
+    // 检查是否是数据库页面
+    if (
+      block.value?.type === "collection_view_page" ||
+      block.value?.type === "page"
+    ) {
+      const page = block.value;
+
+      console.log("Found database page:", page);
+      console.log("Page properties:", page.properties);
+      console.log("Page format:", page.format);
+
+      // 尝试获取页面标题
+      if (page.properties?.title) {
+        const titleValue = page.properties.title[0]?.[0];
+        if (titleValue) {
+          metadata.title = titleValue;
+          console.log("Found title:", titleValue);
+        }
+      }
+
+      // 如果没有找到标题，尝试从collection中获取
+      if (metadata.title === "导航页" && database.collection) {
+        console.log("Trying to get title from collection...");
+        const collectionId = Object.keys(database.collection)[0];
+        const collection = database.collection[collectionId];
+
+        if (collection?.value?.name) {
+          // Notion collection name is usually [["xxx"]], flatten it
+          const nameArr = collection.value.name;
+          if (Array.isArray(nameArr) && Array.isArray(nameArr[0])) {
+            metadata.title = nameArr[0][0];
+            console.log("Found title from collection:", metadata.title);
+          } else if (typeof nameArr === "string") {
+            metadata.title = nameArr;
+            console.log(
+              "Found title from collection (string):",
+              metadata.title
+            );
+          }
+        }
+      }
+
+      // 尝试获取页面图标
+      if (page.format?.page_icon) {
+        metadata.icon = page.format.page_icon;
+        console.log("Found icon:", page.format.page_icon);
+      }
+
+      // 如果没有找到图标，尝试从其他位置获取
+      if (!metadata.icon && page.format?.icon) {
+        metadata.icon = page.format.icon;
+        console.log("Found icon from format.icon:", page.format.icon);
+      }
+
+      break;
+    }
+  }
+
+  // 如果没有找到数据库页面，尝试从collection中获取信息
+  if (metadata.title === "导航页" && database.collection) {
+    console.log("Trying to get metadata from collection...");
+    const collectionId = Object.keys(database.collection)[0];
+    const collection = database.collection[collectionId];
+
+    if (collection?.value?.name) {
+      metadata.title = collection.value.name;
+      console.log("Found title from collection:", collection.value.name);
+    }
+  }
+
+  console.log("Final metadata:", metadata);
+  return metadata;
 }
