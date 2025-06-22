@@ -10,6 +10,8 @@ export interface NavMenuItem {
   isFavorite?: boolean; // 添加收藏状态
   roles: string[]; // 角色权限
   category?: string; // 添加分类属性
+  menuTitle?: string; // 菜单标题（用于HTML标签名）
+  menuIcon?: string; // 菜单图标
 }
 
 export interface MenuData {
@@ -39,3 +41,6 @@ export interface BingImage {
   imageUrls: ImageUrl;
   clickUrl: string;
 }
+
+// 导出 Notion 相关类型
+export * from "./notion";

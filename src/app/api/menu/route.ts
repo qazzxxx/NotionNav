@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { NotionAPI } from "notion-client";
-import { NavMenuItem } from "@/types";
+import {
+  NavMenuItem,
+  NotionDatabase,
+  NotionPropertyValue,
+  NotionPropertyMapping,
+  DatabaseMetadata,
+} from "@/types";
 import { NOTION_CONFIG, NOTION_PROPERTY_MAPPING } from "@/config/notion";
 
 const api = new NotionAPI();
@@ -13,7 +19,7 @@ export async function GET(request: NextRequest) {
     console.log("Fetching database with ID:", pageId);
 
     // fetch database content
-    const database = await api.getPage(pageId);
+    const database = (await api.getPage(pageId)) as NotionDatabase;
 
     console.log("Database structure:");
     console.log("Database keys:", Object.keys(database));
@@ -41,7 +47,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function parseDatabaseToMenuItems(database: any): NavMenuItem[] {
+function parseDatabaseToMenuItems(database: NotionDatabase): NavMenuItem[] {
   const menuItems: NavMenuItem[] = [];
 
   if (!database.block) {
@@ -146,8 +152,8 @@ function parseDatabaseToMenuItems(database: any): NavMenuItem[] {
 }
 
 // 获取属性映射
-function getPropertyMapping(database: any): Record<string, string> {
-  const mapping: Record<string, string> = {};
+function getPropertyMapping(database: NotionDatabase): NotionPropertyMapping {
+  const mapping: NotionPropertyMapping = {};
 
   if (!database.collection) {
     console.log("No collection found");
@@ -168,7 +174,7 @@ function getPropertyMapping(database: any): Record<string, string> {
 
   // 遍历schema，创建属性映射
   for (const [propertyId, propertyInfo] of Object.entries(schema)) {
-    const property = propertyInfo as any;
+    const property = propertyInfo;
     const propertyName = property.name?.toLowerCase();
 
     if (propertyName) {
@@ -182,8 +188,8 @@ function getPropertyMapping(database: any): Record<string, string> {
 
 // 通过映射获取属性值
 function getPropertyValueByMapping(
-  properties: any,
-  propertyMapping: Record<string, string>,
+  properties: Record<string, NotionPropertyValue[]> | undefined,
+  propertyMapping: NotionPropertyMapping,
   targetProperty: string
 ): string | undefined {
   if (!properties) {
@@ -198,7 +204,7 @@ function getPropertyValueByMapping(
         // 尝试不同的访问路径
         const value = property[0]?.[0] || property[0] || property;
         console.log(`Found ${targetProperty} (${propertyId}):`, value);
-        return value;
+        return typeof value === "string" ? value : undefined;
       }
     }
   }
@@ -210,7 +216,7 @@ function getPropertyValueByMapping(
     const property = properties[propertyName];
     if (property) {
       const value = property[0]?.[0] || property[0] || property;
-      if (value) {
+      if (value && typeof value === "string") {
         console.log(`Found ${targetProperty} (${propertyName}):`, value);
         return value;
       }
@@ -221,8 +227,8 @@ function getPropertyValueByMapping(
 }
 
 // 提取数据库元数据（标题和图标）
-function extractDatabaseMetadata(database: any) {
-  const metadata = {
+function extractDatabaseMetadata(database: NotionDatabase): DatabaseMetadata {
+  const metadata: DatabaseMetadata = {
     title: "导航页",
     icon: "",
   };
@@ -255,31 +261,9 @@ function extractDatabaseMetadata(database: any) {
       // 尝试获取页面标题
       if (page.properties?.title) {
         const titleValue = page.properties.title[0]?.[0];
-        if (titleValue) {
+        if (titleValue && typeof titleValue === "string") {
           metadata.title = titleValue;
           console.log("Found title:", titleValue);
-        }
-      }
-
-      // 如果没有找到标题，尝试从collection中获取
-      if (metadata.title === "导航页" && database.collection) {
-        console.log("Trying to get title from collection...");
-        const collectionId = Object.keys(database.collection)[0];
-        const collection = database.collection[collectionId];
-
-        if (collection?.value?.name) {
-          // Notion collection name is usually [["xxx"]], flatten it
-          const nameArr = collection.value.name;
-          if (Array.isArray(nameArr) && Array.isArray(nameArr[0])) {
-            metadata.title = nameArr[0][0];
-            console.log("Found title from collection:", metadata.title);
-          } else if (typeof nameArr === "string") {
-            metadata.title = nameArr;
-            console.log(
-              "Found title from collection (string):",
-              metadata.title
-            );
-          }
         }
       }
 
@@ -306,8 +290,27 @@ function extractDatabaseMetadata(database: any) {
     const collection = database.collection[collectionId];
 
     if (collection?.value?.name) {
-      metadata.title = collection.value.name;
-      console.log("Found title from collection:", collection.value.name);
+      // Notion collection name is usually [["xxx"]], flatten it
+      const nameArr = collection.value.name;
+      if (Array.isArray(nameArr) && Array.isArray(nameArr[0])) {
+        const titleValue = nameArr[0][0];
+        if (typeof titleValue === "string") {
+          metadata.title = titleValue;
+          console.log("Found title from collection:", metadata.title);
+        }
+      } else if (typeof nameArr === "string") {
+        metadata.title = nameArr;
+        console.log("Found title from collection (string):", metadata.title);
+      }
+    }
+    // 新增：尝试从 collection 的 format.icon 读取图标
+    if (collection?.value) {
+      console.log("collection.value:", collection.value);
+      console.log("collection.value.format:", collection.value.format);
+      if (collection.value.format?.icon) {
+        metadata.icon = collection.value.format.icon;
+        console.log("Found icon from collection.format.icon:", metadata.icon);
+      }
     }
   }
 

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { NotionAPI } from "notion-client";
-import { NOTION_CONFIG } from "@/config/notion";
+import { NOTION_CONFIG, NOTION_PROPERTY_MAPPING } from "@/config/notion";
+import {
+  NotionDatabase,
+  NotionPropertyValue,
+  NotionPropertyMapping,
+} from "@/types";
 
 const api = new NotionAPI();
 
@@ -9,83 +14,93 @@ export async function POST(request: NextRequest) {
     const { password } = await request.json();
 
     if (!password) {
-      return NextResponse.json({ error: "密码不能为空" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Password is required" },
+        { status: 400 }
+      );
     }
 
-    const pageId = process.env.NOTION_PAGE_ID || NOTION_CONFIG.DEFAULT_PAGE_ID;
+    console.log("Validating password:", password);
 
-    if (!pageId) {
-      return NextResponse.json({ error: "页面ID未配置" }, { status: 500 });
-    }
+    // 获取数据库中的所有角色
+    const database = (await api.getPage(
+      NOTION_CONFIG.DEFAULT_PAGE_ID
+    )) as NotionDatabase;
+    const allRoles = getAllRolesFromDatabase(database);
 
-    // 获取数据库内容
-    const database = await api.getPage(pageId);
-
-    // 提取所有角色
-    const allRoles = new Set<string>();
-
-    if (database.block) {
-      // 获取属性映射
-      const propertyMapping = getPropertyMapping(database);
-
-      // 遍历数据库的块
-      for (const blockId of Object.keys(database.block)) {
-        const block = database.block[blockId];
-
-        // 检查是否是数据库项
-        if (block.value?.type === "page") {
-          const page = block.value;
-
-          // 获取roles属性
-          const rolesValue = getPropertyValueByMapping(
-            page.properties,
-            propertyMapping,
-            "roles"
-          );
-
-          if (rolesValue) {
-            const roles = rolesValue
-              .split(",")
-              .map((role: string) => role.trim());
-            roles.forEach((role) => allRoles.add(role));
-          }
-        }
-      }
-    }
+    console.log("All roles from database:", allRoles);
 
     // 检查密码是否匹配任何角色
-    const isValidRole = Array.from(allRoles).some(
+    const isValidPassword = allRoles.some(
       (role) => role.toLowerCase() === password.toLowerCase()
     );
 
-    if (isValidRole) {
+    if (isValidPassword) {
+      console.log("Password validation successful for role:", password);
       return NextResponse.json({
         success: true,
-        role: password.toLowerCase(),
-        message: "登录成功",
-        availableRoles: Array.from(allRoles),
+        role: password,
+        message: "Login successful",
       });
     } else {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "密码错误",
-          availableRoles: Array.from(allRoles),
-        },
-        { status: 401 }
-      );
+      console.log("Password validation failed");
+      return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
   } catch (error) {
-    console.error("登录验证错误:", error);
-    return NextResponse.json({ error: "服务器错误" }, { status: 500 });
+    console.error("Error in auth validation:", error);
+    return NextResponse.json(
+      { error: "Authentication failed" },
+      { status: 500 }
+    );
   }
 }
 
+function getAllRolesFromDatabase(database: NotionDatabase): string[] {
+  const roles: string[] = [];
+
+  if (!database.block) {
+    console.log("No block data found in database");
+    return roles;
+  }
+
+  // 获取属性映射
+  const propertyMapping = getPropertyMapping(database);
+
+  // 遍历数据库的块
+  for (const blockId of Object.keys(database.block)) {
+    const block = database.block[blockId];
+
+    // 检查是否是数据库项
+    if (block.value?.type === "page") {
+      const page = block.value;
+
+      // 获取角色属性
+      const rolesValue = getPropertyValueByMapping(
+        page.properties,
+        propertyMapping,
+        "roles"
+      );
+
+      if (rolesValue) {
+        // 分割角色字符串并添加到列表中
+        const pageRoles = rolesValue
+          .split(",")
+          .map((role: string) => role.trim());
+        roles.push(...pageRoles);
+      }
+    }
+  }
+
+  // 去重并返回
+  return [...new Set(roles)];
+}
+
 // 获取属性映射
-function getPropertyMapping(database: any): Record<string, string> {
-  const mapping: Record<string, string> = {};
+function getPropertyMapping(database: NotionDatabase): NotionPropertyMapping {
+  const mapping: NotionPropertyMapping = {};
 
   if (!database.collection) {
+    console.log("No collection found");
     return mapping;
   }
 
@@ -94,6 +109,7 @@ function getPropertyMapping(database: any): Record<string, string> {
   const collection = database.collection[collectionId];
 
   if (!collection?.value?.schema) {
+    console.log("No schema found in collection");
     return mapping;
   }
 
@@ -101,7 +117,7 @@ function getPropertyMapping(database: any): Record<string, string> {
 
   // 遍历schema，创建属性映射
   for (const [propertyId, propertyInfo] of Object.entries(schema)) {
-    const property = propertyInfo as any;
+    const property = propertyInfo;
     const propertyName = property.name?.toLowerCase();
 
     if (propertyName) {
@@ -114,8 +130,8 @@ function getPropertyMapping(database: any): Record<string, string> {
 
 // 通过映射获取属性值
 function getPropertyValueByMapping(
-  properties: any,
-  propertyMapping: Record<string, string>,
+  properties: Record<string, NotionPropertyValue[]> | undefined,
+  propertyMapping: NotionPropertyMapping,
   targetProperty: string
 ): string | undefined {
   if (!properties) {
@@ -129,6 +145,19 @@ function getPropertyValueByMapping(
       if (property) {
         // 尝试不同的访问路径
         const value = property[0]?.[0] || property[0] || property;
+        return typeof value === "string" ? value : undefined;
+      }
+    }
+  }
+
+  // 如果没有找到映射，尝试直接访问
+  for (const propertyName of NOTION_PROPERTY_MAPPING[
+    targetProperty.toUpperCase() as keyof typeof NOTION_PROPERTY_MAPPING
+  ] || []) {
+    const property = properties[propertyName];
+    if (property) {
+      const value = property[0]?.[0] || property[0] || property;
+      if (value && typeof value === "string") {
         return value;
       }
     }
