@@ -120,83 +120,57 @@ function HomeContent() {
     storage.set("bg", String(getNewRandomIndex(Number(storage.get("bg")))));
   }, []);
 
-  // 监听URL参数变化，重置验证状态
+  // 统一的角色验证和锁定状态管理
   useEffect(() => {
     const role = searchParams.get("role");
-    console.log("URL参数变化:", role);
-
-    if (role) {
-      // 有role参数时，设置为验证中状态
-      setIsValidatingUrlRole(true);
-      setIsLocked(false);
-    } else {
-      // 没有role参数时，检查是否有角色限制
-      if (!_rolesLoading && notionRoles.length === 0) {
-        // 没有角色限制，直接解锁
-        console.log("没有角色限制，直接解锁");
-        setIsValidatingUrlRole(false);
-        setIsLocked(false);
-        setIsCheckingRoles(false);
-      } else if (!_rolesLoading && notionRoles.length > 0) {
-        // 有角色限制，设置为锁定状态
-        console.log("有角色限制，显示锁定组件");
-        setIsValidatingUrlRole(false);
-        setIsLocked(true);
-        setIsCheckingRoles(false);
-      }
-      // 如果还在加载中，保持检查状态
-    }
-  }, [searchParams, _rolesLoading, notionRoles]);
-
-  // URL角色验证逻辑
-  useEffect(() => {
-    const role = searchParams.get("role");
-    console.log("URL角色验证检查:", {
+    console.log("角色验证状态检查:", {
       role,
       _rolesLoading,
       notionRoles,
-      validRoles: [...notionRoles],
+      isCheckingRoles,
       isValidatingUrlRole,
       isLocked,
     });
 
-    // 如果有role参数且roles已加载完毕，开始验证
-    if (role && !_rolesLoading) {
-      console.log("开始验证URL角色:", role);
-      setIsValidatingUrlRole(true);
+    // 如果还在加载角色，保持检查状态
+    if (_rolesLoading) {
+      console.log("角色数据还在加载中...");
+      return;
+    }
 
-      // 使用setTimeout来模拟验证过程，让加载状态持续显示
-      // setTimeout(() => {
-      const validRoles = [...notionRoles];
-      if (validRoles.includes(role)) {
+    // 角色数据加载完成，结束检查状态
+    setIsCheckingRoles(false);
+
+    // 如果没有角色限制，直接解锁
+    if (notionRoles.length === 0) {
+      console.log("没有角色限制，直接解锁");
+      setIsLocked(false);
+      setIsValidatingUrlRole(false);
+      return;
+    }
+
+    // 有角色限制的情况
+    if (role) {
+      // 有URL角色参数，进行验证
+      console.log("验证URL角色:", role, "可用角色:", notionRoles);
+      setIsValidatingUrlRole(true);
+      setIsLocked(false);
+
+      // 验证角色
+      if (notionRoles.includes(role)) {
         console.log("URL角色验证成功:", role);
         handleUnlock(role);
         setIsValidatingUrlRole(false);
       } else {
-        console.log("URL角色验证失败:", role, "可用角色:", validRoles);
-        setIsValidatingUrlRole(false); // 验证失败，显示锁定页面
-        setIsLocked(true); // 验证失败时重新锁定
-      }
-      // }, 1000); // 延迟1秒，让用户看到加载状态
-    }
-  }, [searchParams, notionRoles, _rolesLoading]);
-
-  // 检查是否需要显示锁定组件
-  useEffect(() => {
-    // 如果roles已加载完毕且没有任何角色限制，直接解锁
-    if (!_rolesLoading && notionRoles.length === 0) {
-      console.log("没有角色限制，直接解锁");
-      setIsLocked(false);
-      setIsValidatingUrlRole(false);
-      setIsCheckingRoles(false);
-    } else if (!_rolesLoading && notionRoles.length > 0) {
-      // 有角色限制，检查是否需要锁定
-      const role = searchParams.get("role");
-      if (!role) {
-        console.log("有角色限制且没有URL参数，显示锁定组件");
+        console.log("URL角色验证失败:", role, "可用角色:", notionRoles);
+        setIsValidatingUrlRole(false);
         setIsLocked(true);
-        setIsCheckingRoles(false);
       }
+    } else {
+      // 没有URL角色参数，显示锁定页面
+      console.log("有角色限制且没有URL参数，显示锁定组件");
+      setIsValidatingUrlRole(false);
+      setIsLocked(true);
     }
   }, [_rolesLoading, notionRoles, searchParams]);
 
@@ -348,7 +322,7 @@ function HomeContent() {
           <div className="absolute inset-0 backdrop-blur-sm bg-black/10" />
           <div className="relative z-10 p-8 rounded-2xl text-center">
             <div className="animate-spin w-8 h-8 border-2 border-white/30 border-t-white rounded-full mx-auto mb-4"></div>
-            <p className="text-white/70 text-sm">加载中...</p>
+            <p className="text-white/70 text-sm">加载数据中...</p>
           </div>
         </div>
       )}
