@@ -9,7 +9,7 @@ import { Background } from "@/components/Background";
 import { GroupedNotionMenu } from "@/components/GroupedNotionMenu";
 import { FavoritesMenu } from "@/components/FavoritesMenu";
 // 导入常量配置
-import { MAX_BG_COUNT, PASSWORDS } from "@/config/constants";
+import { MAX_BG_COUNT } from "@/config/constants";
 // 导入类型定义
 import { BingImage, NavMenuItem } from "@/types";
 // 导入工具函数
@@ -155,7 +155,7 @@ function HomeContent() {
       role,
       _rolesLoading,
       notionRoles,
-      validRoles: [...notionRoles, ...PASSWORDS],
+      validRoles: [...notionRoles],
       isValidatingUrlRole,
       isLocked,
     });
@@ -167,7 +167,7 @@ function HomeContent() {
 
       // 使用setTimeout来模拟验证过程，让加载状态持续显示
       setTimeout(() => {
-        const validRoles = [...notionRoles, ...PASSWORDS];
+        const validRoles = [...notionRoles];
         if (validRoles.includes(role)) {
           console.log("URL角色验证成功:", role);
           handleUnlock(role);

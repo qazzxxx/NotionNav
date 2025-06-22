@@ -22,8 +22,3 @@ export const VIDEO_URL =
  * 用于获取随机句子
  */
 export const HITOKOTO_API = "https://v1.hitokoto.cn/";
-
-/**
- * 密码常量
- */
-export const PASSWORDS = ["qazz", "guest"];
