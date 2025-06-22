@@ -2,47 +2,28 @@
 
 import { Suspense } from "react";
 
-// 导入导航菜单数据
-import {
-  downloadNavMenuItems,
-  otherNavMenuItems,
-  nasNavMenuItems,
-  newsNavMenuItems,
-  nineKgNavMenuItems,
-  ptNavMenuItems,
-  toolsNavMenuItems,
-  resourceMenuItems,
-  aiNavMenuItems,
-  videoNavMenuItems,
-  workfworderNavMenuItems,
-  fuwuNavMenuItems,
-  worktoolsNavMenuItems,
-  workotherNavMenuItems,
-} from "../config/navitems";
 // 导入React Hooks
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 // 导入自定义组件
 import { Background } from "@/components/Background";
-import { NavMenu } from "@/components/NavMenu";
+import { GroupedNotionMenu } from "@/components/GroupedNotionMenu";
 // 导入常量配置
 import { MAX_BG_COUNT, PASSWORDS } from "@/config/constants";
 // 导入类型定义
-import { BingImage, MenuData } from "@/types";
+import { BingImage, NavMenuItem } from "@/types";
 // 导入工具函数
 import { storage } from "@/utils/storage";
 // 导入自定义Hooks
-import { useMenuSearch } from "@/hooks/useMenuSearch";
 import { useHitokoto } from "@/hooks/useHitokoto";
 import { useDeviceDetect } from "@/hooks/useDeviceDetect";
+import { useNotionMenu } from "@/hooks/useNotionMenu";
 import { SearchBar } from "@/components/SearchBar";
 import { LanToggle } from "@/components/LanToggle";
-// import { Footer } from "@/components/Footer";
 import { useFavorites } from "@/hooks/useFavorites";
 import { WallpaperInfo } from "@/components/WallpaperInfo";
 import { Lock } from "@/components/Lock";
 import { useSearchParams } from "next/navigation";
 import { Weather } from "@/components/Weather";
-import { BabyCounter } from "@/components/BabyCounter";
 
 // 创建一个包装组件来使用 useSearchParams
 function HomeContent() {
@@ -52,124 +33,14 @@ function HomeContent() {
 
   const [searchValue, setSearchValue] = useState(""); // 添加搜索值状态
 
-  const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  const { toggleFavorite, isFavorite } = useFavorites();
 
-  // 使用 useMemo 缓存过滤后的菜单数据
-  const filteredMenuData = useMemo(() => {
-    const baseData: MenuData[] = [
-      {
-        title: "常用",
-        icon: "common",
-        items: favorites.filter((item) => {
-          // 否则检查当前用户角色是否在允许的角色列表中
-          return item.roles?.includes(userRole);
-        }),
-      },
-      {
-        title: "资讯",
-        icon: "news",
-        items: newsNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "影视",
-        icon: "video",
-        items: videoNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "NAS",
-        icon: "nas",
-        items: nasNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "工具",
-        icon: "tools",
-        items: toolsNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "PT",
-        icon: "pt",
-        items: ptNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "下载",
-        icon: "download",
-        items: downloadNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "AI",
-        icon: "ai",
-        items: aiNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "资源",
-        icon: "resource",
-        items: resourceMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "9KG",
-        icon: "ninekg",
-        items: nineKgNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "其他",
-        icon: "other",
-        items: otherNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "工作平台",
-        icon: "news",
-        items: workotherNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "ISV后台",
-        icon: "work",
-        items: workfworderNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "服务市场",
-        icon: "pt",
-        items: fuwuNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-      {
-        title: "高效工具",
-        icon: "tools",
-        items: worktoolsNavMenuItems.filter((item) => {
-          return item.roles.includes(userRole) && !isFavorite(item.href);
-        }),
-      },
-    ];
-
-    return baseData;
-  }, [userRole, favorites, isFavorite]); // 添加依赖项
-
-  // 使用过滤后的数据
-  const { menuData, searchMenu } = useMenuSearch(filteredMenuData);
+  // 使用Notion菜单Hook
+  const {
+    menuItems: notionMenuItems,
+    loading: notionLoading,
+    error: notionError,
+  } = useNotionMenu();
 
   // 使用自定义Hook获取一言数据
   const { data: hitokoto, fetchHitokoto } = useHitokoto();
@@ -227,14 +98,21 @@ function HomeContent() {
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchValue(value);
-    searchMenu(value);
   };
 
   const onResetSearch = () => {
     // 清空搜索框
     setSearchValue("");
-    // 重置搜索结果
-    searchMenu("");
+  };
+
+  /**
+   * 处理菜单项选择
+   * @param item 选中的菜单项
+   */
+  const handleSelectMenuItem = (item: NavMenuItem) => {
+    const url = isLan ? item.lanHref || item.href : item.href;
+    window.open(url, "_blank");
+    onResetSearch();
   };
 
   /**
@@ -244,13 +122,26 @@ function HomeContent() {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const validMenuData = menuData.filter((menu) => menu.items.length);
-    if (validMenuData.length) {
-      const firstItem = validMenuData[0].items[0];
-      if (firstItem) {
-        window.open(firstItem.href, "_blank");
+    if (searchValue.trim()) {
+      // 首先尝试在Notion菜单项中搜索
+      const matchingMenuItem = notionMenuItems.find(
+        (item) =>
+          item.roles?.includes(userRole) &&
+          (item.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.description?.toLowerCase().includes(searchValue.toLowerCase()))
+      );
+
+      if (matchingMenuItem) {
+        // 如果找到匹配的菜单项，直接打开
+        const url = isLan
+          ? matchingMenuItem.lanHref || matchingMenuItem.href
+          : matchingMenuItem.href;
+        window.open(url, "_blank");
+        onResetSearch();
+        return;
       }
-    } else {
+
+      // 如果没有找到匹配的菜单项，检查是否是URL
       const urlRegex =
         /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
 
@@ -349,6 +240,10 @@ function HomeContent() {
               hitokoto={hitokoto}
               onSearch={onSearch}
               onSubmit={onSubmit}
+              menuItems={notionMenuItems}
+              userRole={userRole}
+              isLan={isLan}
+              onSelectMenuItem={handleSelectMenuItem}
             />
 
             <LanToggle isLan={isLan} onToggle={handleLanToggle} />
@@ -374,26 +269,20 @@ function HomeContent() {
                   {/* 天气信息 */}
                   <Weather />
                 </div>
-                <div
-                  className="relative rounded-2xl"
-                  style={{ animationDelay: `${0 * 0.1}s` }}
-                >
-                  <BabyCounter />
-                </div>
               </div>
             </div>
           )}
 
-          {/* 渲染导航菜单列表 */}
-          {menuData.map((menu) => (
-            <NavMenu
-              key={menu.title}
-              menu={menu}
+          {/* Notion菜单 */}
+          {!notionLoading && !notionError && notionMenuItems.length > 0 && (
+            <GroupedNotionMenu
+              menuItems={notionMenuItems}
               isLan={isLan}
               onToggleFavorite={toggleFavorite}
               isFavorite={isFavorite}
+              userRole={userRole}
             />
-          ))}
+          )}
 
           {/* 底部信息展示区域 */}
           {/* {isLan && <Footer daysUntil={daysUntil} />} */}

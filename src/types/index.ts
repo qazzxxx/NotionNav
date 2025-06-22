@@ -9,6 +9,7 @@ export interface NavMenuItem {
   avatarColor?: string;
   isFavorite?: boolean; // 添加收藏状态
   roles: string[]; // 角色权限
+  category?: string; // 添加分类属性
 }
 
 export interface MenuData {
