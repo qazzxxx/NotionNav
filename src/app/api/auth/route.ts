@@ -20,34 +20,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("Validating password:", password);
-
     // 获取数据库中的所有角色
     const database = (await api.getPage(
       NOTION_CONFIG.DEFAULT_PAGE_ID
     )) as NotionDatabase;
     const allRoles = getAllRolesFromDatabase(database);
 
-    console.log("All roles from database:", allRoles);
-
-    // 检查密码是否匹配任何角色
-    const isValidPassword = allRoles.some(
-      (role) => role.toLowerCase() === password.toLowerCase()
-    );
-
-    if (isValidPassword) {
-      console.log("Password validation successful for role:", password);
+    // 验证密码是否匹配任何角色
+    if (allRoles.includes(password)) {
       return NextResponse.json({
         success: true,
         role: password,
-        message: "Login successful",
+        message: "Authentication successful",
       });
     } else {
-      console.log("Password validation failed");
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
   } catch (error) {
-    console.error("Error in auth validation:", error);
+    console.error("Error during authentication:", error);
     return NextResponse.json(
       { error: "Authentication failed" },
       { status: 500 }

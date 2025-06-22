@@ -123,18 +123,9 @@ function HomeContent() {
   // 统一的角色验证和锁定状态管理
   useEffect(() => {
     const role = searchParams.get("role");
-    console.log("角色验证状态检查:", {
-      role,
-      _rolesLoading,
-      notionRoles,
-      isCheckingRoles,
-      isValidatingUrlRole,
-      isLocked,
-    });
 
     // 如果还在加载角色，保持检查状态
     if (_rolesLoading) {
-      console.log("角色数据还在加载中...");
       return;
     }
 
@@ -143,7 +134,6 @@ function HomeContent() {
 
     // 如果没有角色限制，直接解锁
     if (notionRoles.length === 0) {
-      console.log("没有角色限制，直接解锁");
       setIsLocked(false);
       setIsValidatingUrlRole(false);
       return;
@@ -152,23 +142,19 @@ function HomeContent() {
     // 有角色限制的情况
     if (role) {
       // 有URL角色参数，进行验证
-      console.log("验证URL角色:", role, "可用角色:", notionRoles);
       setIsValidatingUrlRole(true);
       setIsLocked(false);
 
       // 验证角色
       if (notionRoles.includes(role)) {
-        console.log("URL角色验证成功:", role);
         handleUnlock(role);
         setIsValidatingUrlRole(false);
       } else {
-        console.log("URL角色验证失败:", role, "可用角色:", notionRoles);
         setIsValidatingUrlRole(false);
         setIsLocked(true);
       }
     } else {
       // 没有URL角色参数，显示锁定页面
-      console.log("有角色限制且没有URL参数，显示锁定组件");
       setIsValidatingUrlRole(false);
       setIsLocked(true);
     }

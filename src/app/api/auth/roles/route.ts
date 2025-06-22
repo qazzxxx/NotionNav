@@ -11,15 +11,11 @@ const api = new NotionAPI();
 
 export async function GET(_request: NextRequest) {
   try {
-    console.log("Fetching all roles from Notion database");
-
     // 获取数据库中的所有角色
     const database = (await api.getPage(
       NOTION_CONFIG.DEFAULT_PAGE_ID
     )) as NotionDatabase;
     const allRoles = getAllRolesFromDatabase(database);
-
-    console.log("All roles from database:", allRoles);
 
     return NextResponse.json({
       success: true,

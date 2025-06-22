@@ -20,9 +20,9 @@ export const Background = ({
   const [currentBg, setCurrentBg] = useState<string>("");
 
   useEffect(() => {
+    // 如果有Notion封面，优先使用
     if (notionCover) {
-      console.log("Using Notion database cover:", notionCover);
-
+      // 预加载图片
       const img = new Image();
       img.src = notionCover;
       img.onload = () => {
@@ -36,6 +36,7 @@ export const Background = ({
       return;
     }
 
+    // 如果没有Notion封面，使用原有逻辑
     loadDefaultBackground();
   }, [isApple, isLan, notionCover, onWallpaperInfo]);
 
