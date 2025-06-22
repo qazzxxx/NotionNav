@@ -12,6 +12,7 @@
 - 🏷️ **分类分组** - 按分类自动分组显示菜单项
 - 🌐 **内网/外网切换** - 自动根据环境切换链接
 - 🔑 **登录验证** - 基于 Notion Roles 字段的登录验证
+- 🔗 **URL 角色验证** - 支持通过 URL 参数 `?role=xxx` 直接验证角色
 - ⭐ **收藏功能** - 支持收藏常用菜单项，独立显示
 - 📱 **响应式设计** - 完美适配各种设备
 - ⚡ **实时更新** - 无需重启应用即可更新菜单
@@ -263,7 +264,30 @@ category: "开发工具"
 - 支持多角色登录
 - 安全的 API 验证机制
 
-### 6. 收藏功能
+### 6. URL 角色验证
+
+- 支持通过 URL 参数 `?role=xxx` 直接验证角色
+- 自动从 Notion 数据库中读取所有角色进行验证
+- 同时支持备用密码（qazz, guest）
+- 验证成功后自动解锁页面并设置用户角色
+- 支持实时角色更新，无需重启应用
+
+**使用示例：**
+
+```
+https://your-domain.vercel.app/?role=qa
+https://your-domain.vercel.app/?role=qazz
+https://your-domain.vercel.app/?role=guest
+```
+
+**验证逻辑：**
+
+1. 优先使用 Notion 数据库中的 Roles 字段值进行验证
+2. 如果 Notion 角色验证失败，使用备用密码验证
+3. 验证成功后自动解锁页面并设置用户角色
+4. 支持多角色配置（用逗号分隔）
+
+### 7. 收藏功能
 
 - 支持收藏常用菜单项
 - 收藏数据存储在浏览器 localStorage 中
@@ -322,6 +346,16 @@ nnav/
 - 测试不同角色的权限控制
 - 重新锁定功能测试
 
+### 角色验证测试
+
+访问 `/test-roles` 页面可以测试角色验证功能：
+
+- 查看从 Notion 数据库中获取的所有角色
+- 显示备用密码列表
+- 查看所有有效角色的合并列表
+- 提供 URL 参数测试示例
+- 实时刷新角色数据
+
 ### 收藏功能测试
 
 访问 `/test-favorites` 页面可以测试收藏功能：
@@ -342,6 +376,12 @@ curl http://localhost:3000/api/menu
 curl -X POST http://localhost:3000/api/auth \
   -H "Content-Type: application/json" \
   -d '{"password":"qazz"}'
+
+# 获取所有角色
+curl http://localhost:3000/api/auth/roles
+
+# 检查环境变量配置
+curl http://localhost:3000/api/env-check
 ```
 
 ## 🔍 故障排除
@@ -389,8 +429,11 @@ curl -X POST http://localhost:3000/api/auth \
 
 - 访问 `/api/menu` 查看原始 API 响应
 - 访问 `/api/auth` 测试登录验证（POST 请求）
+- 访问 `/api/auth/roles` 查看所有可用角色
+- 访问 `/api/env-check` 检查环境变量配置
 - 访问 `/test-notion` 查看页面连接状态
 - 访问 `/test-auth` 测试登录功能
+- 访问 `/test-roles` 测试角色验证功能
 - 访问 `/test-favorites` 测试收藏功能
 - 访问 `/test-status` 查看菜单项状态信息
 - 查看浏览器控制台获取详细错误信息

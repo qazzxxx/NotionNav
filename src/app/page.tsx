@@ -18,6 +18,7 @@ import { storage } from "@/utils/storage";
 import { useHitokoto } from "@/hooks/useHitokoto";
 import { useDeviceDetect } from "@/hooks/useDeviceDetect";
 import { useNotionMenu } from "@/hooks/useNotionMenu";
+import { useNotionRoles } from "@/hooks/useNotionRoles";
 import { useFavorites } from "@/hooks/useFavorites";
 import { SearchBar } from "@/components/SearchBar";
 import { LanToggle } from "@/components/LanToggle";
@@ -41,6 +42,13 @@ function HomeContent() {
     loading: notionLoading,
     error: notionError,
   } = useNotionMenu();
+
+  // 使用Notion角色Hook
+  const {
+    roles: notionRoles,
+    loading: _rolesLoading,
+    error: _rolesError,
+  } = useNotionRoles();
 
   // 使用自定义Hook获取一言数据
   const { data: hitokoto, fetchHitokoto } = useHitokoto();
@@ -102,10 +110,18 @@ function HomeContent() {
   // 组件挂载时检查 URL 参数
   useEffect(() => {
     const role = searchParams.get("role");
-    if (role && PASSWORDS.includes(role)) {
-      handleUnlock(role);
+    if (role) {
+      // 优先使用 Notion 数据库中的角色进行验证
+      const validRoles = [...notionRoles, ...PASSWORDS]; // 合并 Notion 角色和备用密码
+      if (validRoles.includes(role)) {
+        console.log("URL role parameter validated:", role);
+        handleUnlock(role);
+      } else {
+        console.log("Invalid URL role parameter:", role);
+        console.log("Available roles:", validRoles);
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, notionRoles]); // 添加 notionRoles 作为依赖
 
   /**
    * 处理语言切换
