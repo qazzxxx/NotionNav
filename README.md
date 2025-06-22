@@ -171,6 +171,17 @@ pnpm dev
 
 ## 📊 Notion 页面/数据库设置
 
+### 🎯 快速开始 - 使用模板
+
+**推荐使用我们的 Notion 模板快速开始：**
+
+📋 **[NNav 导航菜单模板](https://like-emmental-3d4.notion.site/219692535678800fbefffd8ae6924454?v=2196925356788073920e000c2a02bf98)**
+
+1. 点击上面的模板链接
+2. 点击右上角的 "Duplicate" 按钮复制到你的 Notion 工作区
+3. 复制页面 ID（URL 中的长字符串）
+4. 在环境变量中设置 `NOTION_PAGE_ID`
+
 ### 数据库结构
 
 数据库需要包含以下属性：
