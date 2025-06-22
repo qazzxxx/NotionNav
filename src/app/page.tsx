@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 // 导入自定义组件
 import { Background } from "@/components/Background";
 import { GroupedNotionMenu } from "@/components/GroupedNotionMenu";
+import { FavoritesMenu } from "@/components/FavoritesMenu";
 // 导入常量配置
 import { MAX_BG_COUNT, PASSWORDS } from "@/config/constants";
 // 导入类型定义
@@ -17,9 +18,9 @@ import { storage } from "@/utils/storage";
 import { useHitokoto } from "@/hooks/useHitokoto";
 import { useDeviceDetect } from "@/hooks/useDeviceDetect";
 import { useNotionMenu } from "@/hooks/useNotionMenu";
+import { useFavorites } from "@/hooks/useFavorites";
 import { SearchBar } from "@/components/SearchBar";
 import { LanToggle } from "@/components/LanToggle";
-import { useFavorites } from "@/hooks/useFavorites";
 import { WallpaperInfo } from "@/components/WallpaperInfo";
 import { Lock } from "@/components/Lock";
 import { useSearchParams } from "next/navigation";
@@ -32,8 +33,6 @@ function HomeContent() {
   const [userRole, setUserRole] = useState<string>("guest");
 
   const [searchValue, setSearchValue] = useState(""); // 添加搜索值状态
-
-  const { toggleFavorite, isFavorite } = useFavorites();
 
   // 使用Notion菜单Hook
   const {
@@ -55,6 +54,9 @@ function HomeContent() {
 
   // 添加锁屏状态
   const [isLocked, setIsLocked] = useState(true);
+
+  // 使用自定义Hook管理收藏状态
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   /**
    * 生成不同于当前值的随机数(0-3)
@@ -275,13 +277,25 @@ function HomeContent() {
 
           {/* Notion菜单 */}
           {!notionLoading && !notionError && notionMenuItems.length > 0 && (
-            <GroupedNotionMenu
-              menuItems={notionMenuItems}
-              isLan={isLan}
-              onToggleFavorite={toggleFavorite}
-              isFavorite={isFavorite}
-              userRole={userRole}
-            />
+            <>
+              {/* 收藏菜单 */}
+              <FavoritesMenu
+                userRole={userRole}
+                isLan={isLan}
+                favorites={favorites}
+                removeFavorite={removeFavorite}
+              />
+
+              {/* 分组菜单 */}
+              <GroupedNotionMenu
+                menuItems={notionMenuItems}
+                isLan={isLan}
+                userRole={userRole}
+                addFavorite={addFavorite}
+                removeFavorite={removeFavorite}
+                isFavorite={isFavorite}
+              />
+            </>
           )}
 
           {/* 底部信息展示区域 */}

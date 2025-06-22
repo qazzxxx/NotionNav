@@ -1,35 +1,64 @@
-import { useState, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { NavMenuItem } from "@/types";
-import { storage } from "@/utils/storage";
+
+const FAVORITES_KEY = "nnav_favorites";
 
 export const useFavorites = () => {
-  // 初始化时从localStorage读取收藏数据
-  const [favorites, setFavorites] = useState<NavMenuItem[]>(() => {
-    if (typeof window === "undefined") return [];
-    const saved = storage.get("favorites");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [favorites, setFavorites] = useState<NavMenuItem[]>([]);
 
-  // 使用useCallback缓存函数
-  const toggleFavorite = useCallback((item: NavMenuItem) => {
-    setFavorites((prev) => {
-      const isCurrentlyFavorited = prev.some((fav) => fav.href === item.href);
-      const newFavorites = isCurrentlyFavorited
-        ? prev.filter((fav) => fav.href !== item.href)
-        : [...prev, { ...item, isFavorite: true }];
+  // 从localStorage加载收藏
+  useEffect(() => {
+    const loadFavorites = () => {
+      try {
+        const stored = localStorage.getItem(FAVORITES_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setFavorites(Array.isArray(parsed) ? parsed : []);
+        }
+      } catch (error) {
+        console.error("加载收藏失败:", error);
+        setFavorites([]);
+      }
+    };
 
-      // 更新localStorage
-      storage.set("favorites", JSON.stringify(newFavorites));
-      return newFavorites;
-    });
+    loadFavorites();
   }, []);
 
-  const isFavorite = useCallback(
-    (href: string) => {
-      return favorites.some((fav) => fav.href === href);
-    },
-    [favorites]
-  );
+  // 添加收藏
+  const addFavorite = (item: NavMenuItem) => {
+    const newFavorites = [...favorites];
+    const exists = newFavorites.find((fav) => fav.href === item.href);
 
-  return { favorites, toggleFavorite, isFavorite };
+    if (!exists) {
+      newFavorites.push(item);
+      setFavorites(newFavorites);
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
+    }
+  };
+
+  // 移除收藏
+  const removeFavorite = (href: string) => {
+    const newFavorites = favorites.filter((fav) => fav.href !== href);
+    setFavorites(newFavorites);
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
+  };
+
+  // 检查是否已收藏
+  const isFavorite = (href: string) => {
+    return favorites.some((fav) => fav.href === href);
+  };
+
+  // 清空所有收藏
+  const clearFavorites = () => {
+    setFavorites([]);
+    localStorage.removeItem(FAVORITES_KEY);
+  };
+
+  return {
+    favorites,
+    addFavorite,
+    removeFavorite,
+    isFavorite,
+    clearFavorites,
+  };
 };

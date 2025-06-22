@@ -6,18 +6,20 @@ import { useCallback, memo, useState, useEffect, useMemo } from "react";
 interface GroupedNotionMenuProps {
   menuItems: NavMenuItem[];
   isLan: boolean;
-  onToggleFavorite: (item: NavMenuItem) => void;
-  isFavorite: (href: string) => boolean;
   userRole: string;
+  addFavorite: (item: NavMenuItem) => void;
+  removeFavorite: (href: string) => void;
+  isFavorite: (href: string) => boolean;
 }
 
 export const GroupedNotionMenu = memo(
   ({
     menuItems,
     isLan,
-    onToggleFavorite,
-    isFavorite,
     userRole,
+    addFavorite,
+    removeFavorite,
+    isFavorite,
   }: GroupedNotionMenuProps) => {
     // 添加客户端渲染控制
     const [mounted, setMounted] = useState(false);
@@ -30,9 +32,14 @@ export const GroupedNotionMenu = memo(
       (e: React.MouseEvent, item: NavMenuItem) => {
         e.preventDefault();
         e.stopPropagation();
-        onToggleFavorite(item);
+
+        if (isFavorite(item.href)) {
+          removeFavorite(item.href);
+        } else {
+          addFavorite(item);
+        }
       },
-      [onToggleFavorite]
+      [addFavorite, removeFavorite, isFavorite]
     );
 
     // 过滤菜单项，只显示用户有权限访问的

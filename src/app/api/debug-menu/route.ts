@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { NotionAPI } from "notion-client";
-import { NavMenuItem } from "@/types";
 import { NOTION_CONFIG, NOTION_PROPERTY_MAPPING } from "@/config/notion";
 
 const api = new NotionAPI();
@@ -11,21 +10,20 @@ export async function GET(request: NextRequest) {
     const databaseId =
       searchParams.get("databaseId") || NOTION_CONFIG.DEFAULT_DATABASE_ID;
 
-    console.log("Fetching database with ID:", databaseId);
+    console.log("Debug: Fetching database with ID:", databaseId);
 
     // fetch database content
     const database = await api.getPage(databaseId);
 
-    console.log("Database structure:");
-    console.log("Database keys:", Object.keys(database));
-    console.log("Database block keys:", Object.keys(database.block || {}));
+    // 解析数据库内容，提取所有菜单项（包括隐藏的）
+    const allItems = parseAllDatabaseItems(database);
 
-    // 解析数据库内容，提取菜单项
-    const menuItems = parseDatabaseToMenuItems(database);
-
-    console.log("Parsed menu items:", menuItems);
-
-    return NextResponse.json({ menuItems });
+    return NextResponse.json({
+      allItems,
+      totalCount: allItems.length,
+      visibleCount: allItems.filter((item) => item.isVisible).length,
+      hiddenCount: allItems.filter((item) => !item.isVisible).length,
+    });
   } catch (error) {
     console.error("Error fetching from Notion:", error);
     return NextResponse.json(
@@ -35,12 +33,12 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function parseDatabaseToMenuItems(database: any): NavMenuItem[] {
-  const menuItems: NavMenuItem[] = [];
+function parseAllDatabaseItems(database: any) {
+  const allItems: any[] = [];
 
   if (!database.block) {
     console.log("No block data found in database");
-    return menuItems;
+    return allItems;
   }
 
   // 获取属性映射
@@ -51,17 +49,9 @@ function parseDatabaseToMenuItems(database: any): NavMenuItem[] {
   for (const blockId of Object.keys(database.block)) {
     const block = database.block[blockId];
 
-    console.log(`\n--- Block ${blockId} ---`);
-    console.log("Block structure:", Object.keys(block));
-    console.log("Block value keys:", Object.keys(block.value || {}));
-    console.log("Block value type:", block.value?.type);
-
     // 检查是否是数据库项
     if (block.value?.type === "page") {
       const page = block.value;
-
-      console.log("Page properties keys:", Object.keys(page.properties || {}));
-      console.log("Page properties:", page.properties);
 
       // 使用属性映射来提取数据
       const title =
@@ -99,22 +89,12 @@ function parseDatabaseToMenuItems(database: any): NavMenuItem[] {
           "category"
         ) || "其他";
 
-      console.log("Extracted values:");
-      console.log("- title:", title);
-      console.log("- description:", description);
-      console.log("- href:", href);
-      console.log("- avatar:", avatar);
-      console.log("- roles:", roles);
-      console.log("- lanHref:", lanHref);
-      console.log("- status:", status);
-      console.log("- category:", category);
-
-      // 检查状态，只显示状态为"显示"或"active"的菜单项
-      const isActive =
+      // 检查状态
+      const isVisible =
         status === "显示" || status === "active" || status === "Active";
 
-      if (title && href && isActive) {
-        menuItems.push({
+      if (title && href) {
+        allItems.push({
           id: blockId,
           title: title.trim(),
           description: description.trim(),
@@ -122,21 +102,16 @@ function parseDatabaseToMenuItems(database: any): NavMenuItem[] {
           lanHref: lanHref.trim() || undefined,
           avatar: avatar.trim() || undefined,
           roles: roles.map((role: string) => role.trim()),
-          category: category.trim(), // 添加分类信息
+          category: category.trim(),
+          status: status,
+          isVisible: isVisible,
+          rawStatus: status,
         });
-      } else {
-        if (!isActive) {
-          console.log("Skipping item - status is not active:", status);
-        } else {
-          console.log("Skipping item - missing title/href");
-        }
       }
-    } else {
-      console.log("Skipping block - not a page type");
     }
   }
 
-  return menuItems;
+  return allItems;
 }
 
 // 获取属性映射
