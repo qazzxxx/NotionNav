@@ -6,18 +6,40 @@ import { useEffect, useState } from "react";
 interface BackgroundProps {
   isApple: boolean;
   isLan: boolean;
+  notionCover?: string;
   onWallpaperInfo?: (info: BingImage) => void;
 }
 
 export const Background = ({
   isApple,
   isLan,
+  notionCover,
   onWallpaperInfo,
 }: BackgroundProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentBg, setCurrentBg] = useState<string>("");
 
   useEffect(() => {
+    if (notionCover) {
+      console.log("Using Notion database cover:", notionCover);
+
+      const img = new Image();
+      img.src = notionCover;
+      img.onload = () => {
+        setCurrentBg(notionCover);
+        setIsLoading(false);
+      };
+      img.onerror = () => {
+        console.error("Failed to load Notion cover, falling back to default");
+        loadDefaultBackground();
+      };
+      return;
+    }
+
+    loadDefaultBackground();
+  }, [isApple, isLan, notionCover, onWallpaperInfo]);
+
+  const loadDefaultBackground = () => {
     if (isApple && !isLan) {
       const fetchBingWallpaper = async () => {
         try {
@@ -59,7 +81,7 @@ export const Background = ({
 
       fetchBingWallpaper();
     } else {
-      // 加载失败时使用默认图片
+      // 非苹果设备或内网环境，使用本地图片作为fallback
       const localImgUrl = `/bg/${storage.get("bg")}.jpg`;
 
       // 预加载图片
@@ -69,39 +91,47 @@ export const Background = ({
         setCurrentBg(localImgUrl);
         setIsLoading(false);
       };
-      setIsLoading(false);
+      img.onerror = () => {
+        // 如果本地图片也加载失败，使用视频背景
+        setCurrentBg("");
+        setIsLoading(false);
+      };
     }
-  }, [isApple, isLan, onWallpaperInfo]);
+  };
 
-  return isApple ? (
+  return (
     <>
       {/* 添加黑色背景层 */}
       <div className="cover" style={{ backgroundColor: "#000000" }} />
-      {/* 图片层 */}
-      <div
-        className={`cover wallpaper transition-all duration-1000 ease-in-out ${
-          isLoading ? "opacity-0" : "opacity-100"
-        }`}
-        style={{
-          background: currentBg
-            ? `url('${currentBg}') center center / cover no-repeat`
-            : undefined,
-        }}
-      />
+
+      {/* 图片背景层 */}
+      {currentBg && (
+        <div
+          className={`cover wallpaper transition-all duration-1000 ease-in-out ${
+            isLoading ? "opacity-0" : "opacity-100"
+          }`}
+          style={{
+            background: `url('${currentBg}') center center / cover no-repeat`,
+          }}
+        />
+      )}
+
+      {/* 视频背景层 - 只在没有图片背景时显示 */}
+      {!currentBg && !isApple && (
+        <div className="video-background">
+          <video
+            id="bgVideo"
+            autoPlay
+            loop
+            muted
+            className="transition-opacity duration-1000"
+            onLoadedData={() => setIsLoading(false)}
+          >
+            <source src={VIDEO_URL} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      )}
     </>
-  ) : (
-    <div className="video-background">
-      <video
-        id="bgVideo"
-        autoPlay
-        loop
-        muted
-        className="transition-opacity duration-1000"
-        onLoadedData={() => setIsLoading(false)}
-      >
-        <source src={VIDEO_URL} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-    </div>
   );
 };

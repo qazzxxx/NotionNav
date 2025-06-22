@@ -4,6 +4,7 @@ import { NavMenuItem } from "@/types";
 interface DatabaseMetadata {
   title: string;
   icon: string;
+  cover?: string;
 }
 
 interface UseNotionMenuReturn {
@@ -19,6 +20,7 @@ export function useNotionMenu(databaseId?: string): UseNotionMenuReturn {
   const [databaseMetadata, setDatabaseMetadata] = useState<DatabaseMetadata>({
     title: "导航页",
     icon: "",
+    cover: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +48,7 @@ export function useNotionMenu(databaseId?: string): UseNotionMenuReturn {
 
       setMenuItems(data.menuItems || []);
       setDatabaseMetadata(
-        data.databaseMetadata || { title: "导航页", icon: "" }
+        data.databaseMetadata || { title: "导航页", icon: "", cover: "" }
       );
     } catch (err) {
       setError(

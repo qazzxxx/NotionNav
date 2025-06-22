@@ -31,6 +31,7 @@ export interface NotionBlockValue {
   social_media_image_preview_url?: string;
   schema?: Record<string, NotionSchemaProperty>;
   name?: NotionPropertyValue[];
+  cover?: string;
 }
 
 export interface NotionPropertyValue {
@@ -41,6 +42,7 @@ export interface NotionPropertyValue {
 export interface NotionFormat {
   page_icon?: string;
   icon?: string;
+  page_cover?: string;
   site_id?: string;
   collection_pointer?: NotionCollectionPointer;
   social_media_image_preview_url?: string;
@@ -90,6 +92,7 @@ export interface NotionCollection {
 export interface DatabaseMetadata {
   title: string;
   icon: string;
+  cover?: string;
 }
 
 export interface NotionPropertyMapping {

@@ -231,6 +231,7 @@ function extractDatabaseMetadata(database: NotionDatabase): DatabaseMetadata {
   const metadata: DatabaseMetadata = {
     title: "导航页",
     icon: "",
+    cover: "", // 添加封面字段
   };
 
   if (!database.block) {
@@ -279,6 +280,51 @@ function extractDatabaseMetadata(database: NotionDatabase): DatabaseMetadata {
         console.log("Found icon from format.icon:", page.format.icon);
       }
 
+      // 尝试获取页面封面
+      if (page.format?.page_cover) {
+        metadata.cover = page.format.page_cover;
+        console.log("Found cover:", page.format.page_cover);
+      }
+
+      // 尝试获取社交媒体预览图片作为封面
+      if (!metadata.cover && page.format?.social_media_image_preview_url) {
+        const previewUrl = page.format.social_media_image_preview_url;
+        console.log("Found social media preview URL:", previewUrl);
+
+        // 从signed_urls中获取实际的图片URL
+        if (database.signed_urls && previewUrl.startsWith("attachment:")) {
+          const attachmentId = previewUrl.split(":")[1].split(":")[0];
+          console.log("Looking for attachment ID:", attachmentId);
+
+          for (const [urlId, urlData] of Object.entries(database.signed_urls)) {
+            if (urlId.includes(attachmentId) && typeof urlData === "string") {
+              metadata.cover = urlData;
+              console.log("Found cover from signed_urls:", urlData);
+              break;
+            }
+          }
+        } else {
+          metadata.cover = previewUrl;
+          console.log("Using social media preview URL as cover:", previewUrl);
+        }
+      }
+
+      // 尝试从signed_urls获取封面
+      if (!metadata.cover && database.signed_urls) {
+        console.log("Checking signed_urls for cover...");
+        console.log("Signed URLs:", database.signed_urls);
+
+        // 遍历signed_urls查找封面
+        for (const [urlId, urlData] of Object.entries(database.signed_urls)) {
+          console.log(`Checking signed URL ${urlId}:`, urlData);
+          if (typeof urlData === "string" && urlData.includes("cover")) {
+            metadata.cover = urlData;
+            console.log("Found cover from signed_urls:", urlData);
+            break;
+          }
+        }
+      }
+
       break;
     }
   }
@@ -311,7 +357,73 @@ function extractDatabaseMetadata(database: NotionDatabase): DatabaseMetadata {
         metadata.icon = collection.value.format.icon;
         console.log("Found icon from collection.format.icon:", metadata.icon);
       }
+      // 新增：尝试从 collection 的 format.page_cover 读取封面
+      if (collection.value.format?.page_cover) {
+        metadata.cover = collection.value.format.page_cover;
+        console.log(
+          "Found cover from collection.format.page_cover:",
+          metadata.cover
+        );
+      }
     }
+  }
+
+  // 如果还没有找到封面，尝试从其他位置搜索
+  if (!metadata.cover) {
+    console.log("Searching for cover in other locations...");
+
+    // 搜索所有block中的封面信息
+    for (const blockId of Object.keys(database.block)) {
+      const block = database.block[blockId];
+      if (block.value?.format?.page_cover) {
+        metadata.cover = block.value.format.page_cover;
+        console.log("Found cover in block:", blockId, metadata.cover);
+        break;
+      }
+      // 搜索社交媒体预览图片
+      if (block.value?.format?.social_media_image_preview_url) {
+        const previewUrl = block.value.format.social_media_image_preview_url;
+        console.log(
+          "Found social media preview in block:",
+          blockId,
+          previewUrl
+        );
+
+        // 从signed_urls中获取实际的图片URL
+        if (database.signed_urls && previewUrl.startsWith("attachment:")) {
+          const attachmentId = previewUrl.split(":")[1].split(":")[0];
+          console.log("Looking for attachment ID:", attachmentId);
+
+          for (const [urlId, urlData] of Object.entries(database.signed_urls)) {
+            if (urlId.includes(attachmentId) && typeof urlData === "string") {
+              metadata.cover = urlData;
+              console.log("Found cover from signed_urls:", urlData);
+              break;
+            }
+          }
+        } else {
+          metadata.cover = previewUrl;
+          console.log("Using social media preview URL as cover:", previewUrl);
+        }
+        break;
+      }
+    }
+  }
+
+  // 如果还没有找到封面，尝试从 collection.value.cover 读取
+  if (!metadata.cover && database.collection) {
+    const collectionId = Object.keys(database.collection)[0];
+    const collection = database.collection[collectionId];
+    if (collection?.value?.cover) {
+      metadata.cover = collection.value.cover;
+      console.log("Found cover from collection.value.cover:", metadata.cover);
+    }
+  }
+
+  // 如果cover是以/开头的相对路径，加上Notion前缀
+  if (metadata.cover && metadata.cover.startsWith("/")) {
+    metadata.cover = "https://www.notion.so" + metadata.cover;
+    console.log("Normalized cover url:", metadata.cover);
   }
 
   console.log("Final metadata:", metadata);

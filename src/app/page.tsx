@@ -166,18 +166,18 @@ function HomeContent() {
       setIsValidatingUrlRole(true);
 
       // 使用setTimeout来模拟验证过程，让加载状态持续显示
-      setTimeout(() => {
-        const validRoles = [...notionRoles];
-        if (validRoles.includes(role)) {
-          console.log("URL角色验证成功:", role);
-          handleUnlock(role);
-          setIsValidatingUrlRole(false);
-        } else {
-          console.log("URL角色验证失败:", role, "可用角色:", validRoles);
-          setIsValidatingUrlRole(false); // 验证失败，显示锁定页面
-          setIsLocked(true); // 验证失败时重新锁定
-        }
-      }, 1000); // 延迟1秒，让用户看到加载状态
+      // setTimeout(() => {
+      const validRoles = [...notionRoles];
+      if (validRoles.includes(role)) {
+        console.log("URL角色验证成功:", role);
+        handleUnlock(role);
+        setIsValidatingUrlRole(false);
+      } else {
+        console.log("URL角色验证失败:", role, "可用角色:", validRoles);
+        setIsValidatingUrlRole(false); // 验证失败，显示锁定页面
+        setIsLocked(true); // 验证失败时重新锁定
+      }
+      // }, 1000); // 延迟1秒，让用户看到加载状态
     }
   }, [searchParams, notionRoles, _rolesLoading]);
 
@@ -338,6 +338,7 @@ function HomeContent() {
       <Background
         isApple={isApple}
         isLan={isLan}
+        notionCover={databaseMetadata.cover}
         onWallpaperInfo={setWallpaperInfo}
       />
 
@@ -347,7 +348,7 @@ function HomeContent() {
           <div className="absolute inset-0 backdrop-blur-sm bg-black/10" />
           <div className="relative z-10 p-8 rounded-2xl text-center">
             <div className="animate-spin w-8 h-8 border-2 border-white/30 border-t-white rounded-full mx-auto mb-4"></div>
-            <p className="text-white/70 text-sm">正在检查权限设置...</p>
+            <p className="text-white/70 text-sm">加载中...</p>
           </div>
         </div>
       )}
