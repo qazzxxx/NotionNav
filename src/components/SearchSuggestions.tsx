@@ -89,13 +89,19 @@ export const SearchSuggestions = ({
   return (
     <div
       ref={suggestionsRef}
-      className="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"
+      className="absolute top-full left-0 right-0 z-50 max-h-60 overflow-y-auto rounded-xl shadow-xl border border-white/10 backdrop-blur-lg bg-black/40 dark:bg-black/60 transition-all duration-200"
+      style={{
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.18)",
+        border: "1px solid rgba(255,255,255,0.15)",
+      }}
     >
       {matchingItems.map((item, index) => (
         <div
           key={item.id || item.href}
-          className={`flex items-center space-x-3 p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-            index === selectedIndex ? "bg-gray-100 dark:bg-gray-700" : ""
+          className={`flex items-center space-x-3 p-3 cursor-pointer transition-colors rounded-lg ${
+            index === selectedIndex ? "bg-black/20" : "hover:bg-black/10"
           }`}
           onClick={() => onSelectItem(item)}
         >
@@ -119,18 +125,20 @@ export const SearchSuggestions = ({
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-gray-900 dark:text-white truncate">
+            <div
+              className={`font-medium truncate ${
+                index === selectedIndex ? "text-blue-400" : "text-white"
+              }`}
+            >
               {item.title}
             </div>
             {item.description && (
-              <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+              <div className="text-sm text-gray-300 truncate">
                 {item.description}
               </div>
             )}
           </div>
-          <div className="text-xs text-gray-400 dark:text-gray-500">
-            {item.category || "其他"}
-          </div>
+          <div className="text-xs text-gray-300">{item.category || "其他"}</div>
         </div>
       ))}
     </div>
