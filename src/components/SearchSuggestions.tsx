@@ -58,6 +58,9 @@ export const SearchSuggestions = ({
           e.preventDefault();
           if (selectedIndex >= 0 && selectedIndex < matchingItems.length) {
             onSelectItem(matchingItems[selectedIndex]);
+          } else if (selectedIndex === -1 && matchingItems.length > 0) {
+            // 没有选中时，回车默认打开第一个
+            onSelectItem(matchingItems[0]);
           }
           break;
         case "Escape":

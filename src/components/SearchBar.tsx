@@ -62,6 +62,8 @@ export const SearchBar = ({
       onSelectMenuItem(item);
     }
     setShowSuggestions(false);
+    // 选择后清空搜索框
+    onSearch({ target: { value: "" } } as React.ChangeEvent<HTMLInputElement>);
   };
 
   return (
