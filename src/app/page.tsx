@@ -25,7 +25,6 @@ import { LanToggle } from "@/components/LanToggle";
 import { WallpaperInfo } from "@/components/WallpaperInfo";
 import { Lock } from "@/components/Lock";
 import { useSearchParams } from "next/navigation";
-import { Weather } from "@/components/Weather";
 
 // 创建一个包装组件来使用 useSearchParams
 function HomeContent() {
@@ -352,23 +351,6 @@ function HomeContent() {
 
             {/* 显示锁屏状态 */}
           </header>
-
-          {userRole === "qazz" && (
-            <div className="mb-6 mt-3">
-              <h2 className="font-semibold text-slate-800 text-base mb-4 text-white">
-                <span className="text mr-2">🧩</span>小组件
-              </h2>
-              <div className="grid md:grid-cols-2 sm:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <div
-                  className="relative nav-item rounded-2xl"
-                  style={{ animationDelay: `${0 * 0.1}s` }}
-                >
-                  {/* 天气信息 */}
-                  <Weather />
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Notion菜单 */}
           {!notionLoading && !notionError && notionMenuItems.length > 0 && (
