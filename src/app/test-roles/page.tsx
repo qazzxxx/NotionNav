@@ -1,128 +1,147 @@
 "use client";
 
+import { useState } from "react";
 import { useNotionRoles } from "@/hooks/useNotionRoles";
 import { PASSWORDS } from "@/config/constants";
 
 export default function TestRolesPage() {
-  const { roles, loading, error, refetch } = useNotionRoles();
+  const { roles, loading, error } = useNotionRoles();
+  const [testRole, setTestRole] = useState("");
+  const [testResult, setTestResult] = useState("");
+
+  const handleTestRole = () => {
+    if (!testRole.trim()) {
+      setTestResult("请输入要测试的角色");
+      return;
+    }
+
+    const validRoles = [...roles, ...PASSWORDS];
+    const isValid = validRoles.includes(testRole);
+
+    setTestResult(
+      isValid
+        ? `✅ 角色 "${testRole}" 验证成功！`
+        : `❌ 角色 "${testRole}" 验证失败！\n可用角色: ${validRoles.join(", ")}`
+    );
+  };
+
+  const handleTestUrl = (role: string) => {
+    const url = `${window.location.origin}?role=${encodeURIComponent(role)}`;
+    window.open(url, "_blank");
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-gray-800">
-          Notion 角色测试页面
-        </h1>
+        <h1 className="text-3xl font-bold text-white mb-8">角色验证测试</h1>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">
-            角色获取状态
-          </h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Notion角色状态 */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Notion角色状态
+            </h2>
 
-          {loading && (
-            <div className="text-blue-600 mb-4">
-              <div className="animate-spin inline-block w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full mr-2"></div>
-              正在从 Notion 数据库获取角色...
-            </div>
-          )}
+            {loading && (
+              <div className="text-white/70">正在加载Notion角色...</div>
+            )}
 
-          {error && (
-            <div className="text-red-600 mb-4 p-4 bg-red-50 rounded border border-red-200">
-              <strong>错误:</strong> {error}
-            </div>
-          )}
+            {error && <div className="text-red-400">加载失败: {error}</div>}
 
-          {!loading && !error && (
+            {!loading && !error && (
+              <div>
+                <p className="text-white/70 mb-2">从Notion数据库获取的角色:</p>
+                <div className="space-y-2">
+                  {roles.length > 0 ? (
+                    roles.map((role, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between bg-white/5 rounded-lg p-3"
+                      >
+                        <span className="text-white">{role}</span>
+                        <button
+                          onClick={() => handleTestUrl(role)}
+                          className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors"
+                        >
+                          测试URL
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-white/50">暂无角色数据</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 角色测试 */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              角色验证测试
+            </h2>
+
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-medium text-gray-700 mb-2">
-                  Notion 数据库中的角色 ({roles.length} 个)
-                </h3>
-                {roles.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {roles.map((role, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
-                      >
-                        {role}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">未找到任何角色</p>
-                )}
+                <label className="block text-white/70 text-sm mb-2">
+                  测试角色:
+                </label>
+                <input
+                  type="text"
+                  value={testRole}
+                  onChange={(e) => setTestRole(e.target.value)}
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
+                  placeholder="输入要测试的角色"
+                />
               </div>
 
-              <div>
-                <h3 className="text-lg font-medium text-gray-700 mb-2">
-                  备用密码 ({PASSWORDS.length} 个)
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {PASSWORDS.map((password, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"
-                    >
-                      {password}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <button
+                onClick={handleTestRole}
+                className="w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+              >
+                验证角色
+              </button>
 
-              <div>
-                <h3 className="text-lg font-medium text-gray-700 mb-2">
-                  所有有效角色 ({roles.length + PASSWORDS.length} 个)
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {[...roles, ...PASSWORDS].map((role, index) => (
-                    <span
-                      key={index}
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        roles.includes(role)
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-green-100 text-green-800"
-                      }`}
-                    >
-                      {role}
-                      {roles.includes(role) ? " (Notion)" : " (备用)"}
-                    </span>
-                  ))}
+              {testResult && (
+                <div className="mt-4 p-4 bg-white/5 rounded-lg">
+                  <pre className="text-white text-sm whitespace-pre-wrap">
+                    {testResult}
+                  </pre>
                 </div>
-              </div>
+              )}
             </div>
-          )}
-
-          <button
-            onClick={refetch}
-            disabled={loading}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "获取中..." : "重新获取角色"}
-          </button>
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">
-            URL 参数测试
-          </h2>
-          <p className="text-gray-600 mb-4">
-            您可以通过以下 URL 参数测试角色验证功能：
-          </p>
-          <div className="space-y-2">
-            {roles.slice(0, 3).map((role, index) => (
-              <div key={index} className="p-3 bg-gray-50 rounded border">
-                <code className="text-sm text-blue-600">?role={role}</code>
-                <span className="ml-2 text-xs text-gray-500">
-                  (Notion 角色)
-                </span>
-              </div>
-            ))}
+        {/* 备用密码 */}
+        <div className="mt-8 bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+          <h2 className="text-xl font-semibold text-white mb-4">备用密码</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {PASSWORDS.map((password, index) => (
-              <div key={index} className="p-3 bg-gray-50 rounded border">
-                <code className="text-sm text-green-600">?role={password}</code>
-                <span className="ml-2 text-xs text-gray-500">(备用密码)</span>
+              <div
+                key={index}
+                className="flex items-center justify-between bg-white/5 rounded-lg p-3"
+              >
+                <span className="text-white">{password}</span>
+                <button
+                  onClick={() => handleTestUrl(password)}
+                  className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors"
+                >
+                  测试URL
+                </button>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* 使用说明 */}
+        <div className="mt-8 bg-blue-500/20 backdrop-blur-sm rounded-2xl p-6">
+          <h2 className="text-xl font-semibold text-white mb-4">使用说明</h2>
+          <div className="text-white/80 space-y-2">
+            <p>• 点击"测试URL"按钮会在新标签页中打开带有role参数的页面</p>
+            <p>• 如果role参数有效，页面会显示加载状态然后自动解锁</p>
+            <p>• 如果role参数无效，页面会显示锁定界面</p>
+            <p>• 这样可以测试URL角色验证功能是否正常工作</p>
           </div>
         </div>
       </div>

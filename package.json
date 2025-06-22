@@ -8,15 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "deploy-check": "node scripts/check-deployment.js",
-    "env-check": "curl -s http://localhost:3000/api/env-check | jq .",
-    "docker:build": "docker-compose build",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
-    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
-    "docker:dev:down": "docker-compose -f docker-compose.dev.yml down",
-    "docker:deploy": "./scripts/docker-deploy.sh deploy",
-    "docker:status": "./scripts/docker-deploy.sh status"
+    "env-check": "curl -s http://localhost:3000/api/env-check | jq ."
   },
   "dependencies": {
     "lodash": "^4.17.21",

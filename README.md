@@ -271,6 +271,7 @@ category: "开发工具"
 - 同时支持备用密码（qazz, guest）
 - 验证成功后自动解锁页面并设置用户角色
 - 支持实时角色更新，无需重启应用
+- **智能加载状态**：当 URL 包含 role 参数时，先显示"正在验证角色权限..."的加载状态，验证失败才显示锁定页面
 
 **使用示例：**
 
@@ -280,12 +281,15 @@ https://your-domain.vercel.app/?role=qazz
 https://your-domain.vercel.app/?role=guest
 ```
 
-**验证逻辑：**
+**验证流程：**
 
-1. 优先使用 Notion 数据库中的 Roles 字段值进行验证
-2. 如果 Notion 角色验证失败，使用备用密码验证
-3. 验证成功后自动解锁页面并设置用户角色
-4. 支持多角色配置（用逗号分隔）
+1. 检测 URL 中的 role 参数
+2. 显示"正在验证角色权限..."加载状态
+3. 优先使用 Notion 数据库中的 Roles 字段值进行验证
+4. 如果 Notion 角色验证失败，使用备用密码验证
+5. 验证成功后自动解锁页面并设置用户角色
+6. 验证失败则显示锁定页面
+7. 支持多角色配置（用逗号分隔）
 
 ### 7. 收藏功能
 
@@ -481,18 +485,4 @@ curl http://localhost:3000/api/env-check
 
 ### 权限控制策略
 
-- **guest**: 访客权限，只能访问公开菜单项
-- **qazz**: 管理员权限，可以访问所有菜单项
 - **自定义角色**: 可以设置特定的访问权限
-
-### 多页面/多数据库支持
-
-```typescript
-export const NOTION_CONFIG = {
-  DATABASES: {
-    MENU: "menu-database-id",
-    NEWS: "news-database-id",
-    TOOLS: "tools-database-id",
-  },
-};
-```
