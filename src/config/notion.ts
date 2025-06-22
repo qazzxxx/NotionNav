@@ -1,11 +1,17 @@
+import { getNotionPageId } from "@/utils/env";
+
 // Notion配置
 export const NOTION_CONFIG = {
-  // 默认数据库ID，你可以根据需要修改
-  DEFAULT_PAGE_ID: "219692535678800fbefffd8ae6924454",
+  // 使用环境变量管理工具获取页面 ID
+  get DEFAULT_PAGE_ID() {
+    return getNotionPageId();
+  },
 
   // 如果有多个数据库，可以在这里配置
   DATABASES: {
-    MENU: "menu-database-id",
+    get MENU() {
+      return getNotionPageId();
+    },
     // 可以添加更多数据库
     // NEWS: "your-news-database-id",
     // TOOLS: "your-tools-database-id",
