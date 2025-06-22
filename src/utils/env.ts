@@ -19,6 +19,13 @@ export function getNotionPageId(): string {
 }
 
 /**
+ * 获取 Notion Token（可选）
+ */
+export function getNotionToken(): string | undefined {
+  return process.env.NOTION_TOKEN;
+}
+
+/**
  * 验证环境变量配置
  */
 export function validateEnvironment(): {

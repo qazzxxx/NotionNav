@@ -1,7 +1,7 @@
 import { NotionAPI } from "notion-client";
 
-// you can optionally pass an authToken to access private notion resources
-const api = new NotionAPI();
+const notionToken = process.env.NOTION_TOKEN;
+const api = new NotionAPI(notionToken ? { authToken: notionToken } : undefined);
 
 export default async function handler(req, res) {
   try {

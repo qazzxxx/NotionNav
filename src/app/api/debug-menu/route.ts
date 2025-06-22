@@ -8,7 +8,8 @@ import {
   DatabaseMetadata,
 } from "@/types";
 
-const api = new NotionAPI();
+const notionToken = process.env.NOTION_TOKEN;
+const api = new NotionAPI(notionToken ? { authToken: notionToken } : undefined);
 
 export async function GET(request: NextRequest) {
   try {
