@@ -301,15 +301,6 @@ function HomeContent() {
 
   return (
     <div className="h-screen overflow-hidden relative">
-      {/* 调试信息 */}
-      {process.env.NODE_ENV === "development" && (
-        <div className="fixed top-0 left-0 z-[60] bg-black/80 text-white p-2 text-xs">
-          <div>isValidatingUrlRole: {String(isValidatingUrlRole)}</div>
-          <div>isLocked: {String(isLocked)}</div>
-          <div>role: {searchParams.get("role") || "none"}</div>
-        </div>
-      )}
-
       {/* 背景组件始终显示 */}
       <Background
         isApple={isApple}
