@@ -1,5 +1,5 @@
 import { NavMenuItem } from "@/types";
-import Image from "next/image";
+import { Avatar } from "./Avatar";
 import { useState } from "react";
 
 interface FavoritesMenuProps {
@@ -110,28 +110,13 @@ export const FavoritesMenu = ({
                 <div className="flex flex-col items-center space-y-2">
                   {/* 图标 */}
                   <div className="relative">
-                    {item.avatar ? (
-                      <Image
-                        src={item.avatar}
-                        alt={item.title}
-                        width={32}
-                        height={32}
-                        className="rounded-lg"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-medium"
-                        style={{
-                          background: "#673ab7",
-                        }}
-                      >
-                        {item.title.charAt(0)}
-                      </div>
-                    )}
+                    <Avatar
+                      src={item.avatar}
+                      alt={item.title}
+                      href={item.href}
+                      size={32}
+                      className="rounded-lg"
+                    />
                   </div>
 
                   {/* 标题 */}

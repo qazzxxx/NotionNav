@@ -1,6 +1,6 @@
 import { NavMenuItem } from "@/types";
-import Image from "next/image";
 import { HeartIcon } from "./icons/HeartIcon";
+import { Avatar } from "./Avatar";
 import { useCallback, memo, useState, useEffect } from "react";
 
 interface NotionMenuProps {
@@ -76,26 +76,13 @@ export const NotionMenu = memo(
                 style={{ backgroundColor: "rgba(42, 42, 42, 0.42)" }}
                 className="flex justify-items-start items-center rounded-2xl space-x-6 p-5 text-white"
               >
-                {item.avatar ? (
-                  <Image
-                    src={item.avatar}
-                    alt={item.title}
-                    className="rounded-lg"
-                    width={36}
-                    height={36}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : (
-                  <div
-                    className="text-white text-sm rounded-lg w-9 h-9 flex items-center justify-center"
-                    style={{
-                      background: "#673ab7",
-                    }}
-                  >
-                    {item.title.charAt(0)}
-                  </div>
-                )}
+                <Avatar
+                  src={item.avatar}
+                  alt={item.title}
+                  href={item.href}
+                  size={36}
+                  className="rounded-lg"
+                />
                 <div className="min-w-0 relative flex-auto">
                   <h3 className="font-semibold text-slate-900 truncate pr-20 text-white">
                     {item.title}
