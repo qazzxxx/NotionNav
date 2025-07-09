@@ -73,6 +73,8 @@ export interface NotionSelectOption {
   id?: string;
   name?: string;
   color?: string;
+  value?: string; // 兼容部分API
+  text?: string; // 兼容部分API
 }
 
 export interface NotionDatabase {

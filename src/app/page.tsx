@@ -40,6 +40,7 @@ function HomeContent() {
     databaseMetadata,
     loading: notionLoading,
     error: notionError,
+    categoryOrder,
   } = useNotionMenu();
 
   // 使用Notion角色Hook
@@ -379,6 +380,7 @@ function HomeContent() {
                 addFavorite={addFavorite}
                 removeFavorite={removeFavorite}
                 isFavorite={isFavorite}
+                categoryOrder={categoryOrder}
               />
             </>
           )}

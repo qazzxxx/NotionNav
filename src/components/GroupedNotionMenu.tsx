@@ -10,6 +10,7 @@ interface GroupedNotionMenuProps {
   addFavorite: (item: NavMenuItem) => void;
   removeFavorite: (href: string) => void;
   isFavorite: (href: string) => boolean;
+  categoryOrder?: string[];
 }
 
 export const GroupedNotionMenu = memo(
@@ -20,6 +21,7 @@ export const GroupedNotionMenu = memo(
     addFavorite,
     removeFavorite,
     isFavorite,
+    categoryOrder = [],
   }: GroupedNotionMenuProps) => {
     // 添加客户端渲染控制
     const [mounted, setMounted] = useState(false);
@@ -62,6 +64,24 @@ export const GroupedNotionMenu = memo(
       return groups;
     }, [filteredItems]);
 
+    // 获取排序后的分组类别
+    const sortedCategories = useMemo(() => {
+      const allCategories = Object.keys(groupedItems);
+      // 按 categoryOrder 排序，未在 order 中的排在最后
+      return [
+        ...categoryOrder.filter((cat) => allCategories.includes(cat)),
+        ...allCategories.filter((cat) => !categoryOrder.includes(cat)),
+      ];
+    }, [groupedItems, categoryOrder]);
+
+    // 调试输出
+    console.log("categoryOrder from Notion:", categoryOrder);
+    console.log("sortedCategories used for rendering:", sortedCategories);
+    console.log(
+      "All menuItems categories:",
+      filteredItems.map((i) => i.category)
+    );
+
     // 服务端渲染时返回基础结构
     if (!mounted) {
       return <div className="mb-6" />;
@@ -73,7 +93,7 @@ export const GroupedNotionMenu = memo(
 
     return (
       <div className="mb-6">
-        {Object.entries(groupedItems).map(([category, items]) => (
+        {sortedCategories.map((category) => (
           <div key={category} className="mb-8">
             <h2 className="font-semibold text-slate-800 text-base mb-4 text-white">
               <i
@@ -84,7 +104,7 @@ export const GroupedNotionMenu = memo(
             </h2>
 
             <div className="grid md:grid-cols-2 sm:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-              {items.map((item, index) => (
+              {groupedItems[category].map((item, index) => (
                 <div
                   key={item.id || item.href}
                   className="relative nav-item rounded-2xl"

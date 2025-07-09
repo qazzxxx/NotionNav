@@ -26,9 +26,13 @@ export async function GET(request: NextRequest) {
     // 提取数据库元数据（标题和图标）
     const databaseMetadata = extractDatabaseMetadata(database);
 
+    // 提取 category 顺序
+    const categoryOrder = extractCategoryOrder(database);
+
     return NextResponse.json({
       menuItems,
       databaseMetadata,
+      categoryOrder,
     });
   } catch (error) {
     console.error("Error fetching from Notion:", error);
@@ -347,4 +351,32 @@ function extractDatabaseMetadata(database: NotionDatabase): DatabaseMetadata {
   }
 
   return metadata;
+}
+
+// 新增：提取 category 顺序
+function extractCategoryOrder(database: NotionDatabase): string[] {
+  if (!database.collection) return [];
+  const collectionId = Object.keys(database.collection)[0];
+  const collection = database.collection[collectionId];
+  if (!collection?.value?.schema) return [];
+  const schema = collection.value.schema;
+  // 找到 category 属性
+  for (const property of Object.values(schema)) {
+    if (
+      property.name?.toLowerCase() === "category" &&
+      property.type === "select" &&
+      Array.isArray(property.options)
+    ) {
+      // 输出 property.options 结构
+      console.log(
+        "Notion category property.options:",
+        JSON.stringify(property.options, null, 2)
+      );
+      // 兼容 name、value、text 字段
+      return property.options.map(
+        (opt) => opt.name || opt.value || opt.text || ""
+      );
+    }
+  }
+  return [];
 }

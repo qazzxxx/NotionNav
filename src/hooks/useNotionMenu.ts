@@ -13,6 +13,7 @@ interface UseNotionMenuReturn {
   loading: boolean;
   error: string | null;
   refetch: () => void;
+  categoryOrder: string[];
 }
 
 export function useNotionMenu(databaseId?: string): UseNotionMenuReturn {
@@ -22,6 +23,7 @@ export function useNotionMenu(databaseId?: string): UseNotionMenuReturn {
     icon: "",
     cover: "",
   });
+  const [categoryOrder, setCategoryOrder] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,6 +52,7 @@ export function useNotionMenu(databaseId?: string): UseNotionMenuReturn {
       setDatabaseMetadata(
         data.databaseMetadata || { title: "导航页", icon: "", cover: "" }
       );
+      setCategoryOrder(data.categoryOrder || []);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to fetch menu items"
@@ -74,5 +77,6 @@ export function useNotionMenu(databaseId?: string): UseNotionMenuReturn {
     loading,
     error,
     refetch,
+    categoryOrder,
   };
 }
