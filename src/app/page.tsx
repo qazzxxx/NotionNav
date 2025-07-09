@@ -300,6 +300,7 @@ function HomeContent() {
         isApple={isApple}
         isLan={isLan}
         notionCover={databaseMetadata.cover}
+        notionLoading={notionLoading}
         onWallpaperInfo={setWallpaperInfo}
       />
 

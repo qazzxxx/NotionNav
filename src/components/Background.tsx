@@ -7,6 +7,7 @@ interface BackgroundProps {
   isApple: boolean;
   isLan: boolean;
   notionCover?: string;
+  notionLoading: boolean;
   onWallpaperInfo?: (info: BingImage) => void;
 }
 
@@ -14,12 +15,17 @@ export const Background = ({
   isApple,
   isLan,
   notionCover,
+  notionLoading,
   onWallpaperInfo,
 }: BackgroundProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentBg, setCurrentBg] = useState<string>("");
 
   useEffect(() => {
+    if (notionLoading) {
+      // Notion 数据还在加载，什么都不做
+      return;
+    }
     // 如果有Notion封面，优先使用
     if (notionCover) {
       // 预加载图片
@@ -35,10 +41,9 @@ export const Background = ({
       };
       return;
     }
-
     // 如果没有Notion封面，使用原有逻辑
     loadDefaultBackground();
-  }, [isApple, isLan, notionCover, onWallpaperInfo]);
+  }, [isApple, isLan, notionCover, notionLoading, onWallpaperInfo]);
 
   const loadDefaultBackground = () => {
     if (isApple && !isLan) {
