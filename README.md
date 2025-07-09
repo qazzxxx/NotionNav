@@ -1,4 +1,4 @@
-# NNav - 基于 Notion 数据库的导航页
+# NotionNav - 基于 Notion 数据库的导航页
 
 一个基于 Next.js 和 Notion 数据库的现代化导航页面，支持动态菜单管理、权限控制、搜索功能和登录验证。
 
@@ -28,7 +28,7 @@
 
 1. **获取 Notion 页面 ID**
 
-   - 📋 **[NNav 导航菜单模板](https://like-emmental-3d4.notion.site/219692535678800fbefffd8ae6924454?v=2196925356788073920e000c2a02bf98)**
+   - 📋 **[NotionNav 导航菜单模板](https://like-emmental-3d4.notion.site/219692535678800fbefffd8ae6924454?v=2196925356788073920e000c2a02bf98)**
 
      1. 点击上面的模板链接
      2. 点击右上角的 "复制" 按钮复制到你的 Notion 工作区
@@ -37,7 +37,7 @@
 
 2. **点击部署按钮**
 
-   点击 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/nnav&env=NOTION_PAGE_ID&envDescription=Notion%20Page%20ID&envLink=https://github.com/yourusername/nnav%23environment-configuration) 按钮进行部署
+   点击 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/qazzxxx/NotionNav&env=NOTION_PAGE_ID&envDescription=Notion%20Page%20ID&envLink=https://github.com/qazzxxx/NotionNav%23environment-configuration) 按钮进行部署
 
 3. **配置环境变量**
 
@@ -104,7 +104,7 @@ pnpm dev
 
 **推荐使用我们的 Notion 模板快速开始：**
 
-📋 **[NNav 导航菜单模板](https://like-emmental-3d4.notion.site/219692535678800fbefffd8ae6924454?v=2196925356788073920e000c2a02bf98)**
+📋 **[NotionNav 导航菜单模板](https://like-emmental-3d4.notion.site/219692535678800fbefffd8ae6924454?v=2196925356788073920e000c2a02bf98)**
 
 1. 点击上面的模板链接
 2. 点击右上角的 "Duplicate" 按钮复制到你的 Notion 工作区
@@ -216,7 +216,7 @@ category: "开发工具"
 ## 📁 项目结构
 
 ```
-nnav/
+NotionNav/
 ├── src/
 │   ├── app/
 │   │   ├── api/
