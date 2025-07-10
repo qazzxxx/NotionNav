@@ -2,6 +2,8 @@
 
 一个基于 Next.js 和 Notion 数据库的现代化导航页面，支持动态菜单管理、权限控制、搜索功能和登录验证。
 
+![NotionNav 预览图](./public/notionnav.png)
+
 ## ✨ 功能特性
 
 - 🎯 **动态菜单管理** - 通过 Notion 数据库实时管理菜单项
