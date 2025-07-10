@@ -4,6 +4,12 @@
 
 ![NotionNav 预览图](./public/notionnav.png)
 
+> 桌面端预览
+
+![NotionNav 手机端预览图](./public/notionnavmobile.png)
+
+> 手机端预览
+
 ## ✨ 功能特性
 
 - 🎯 **动态菜单管理** - 通过 Notion 数据库实时管理菜单项
