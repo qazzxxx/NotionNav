@@ -2,13 +2,9 @@
 
 一个基于 Next.js 和 Notion 数据库的现代化导航页面，支持动态菜单管理、权限控制、搜索功能和登录验证。
 
-![NotionNav 预览图](./public/notionnav.png)
-
-> 桌面端预览
-
-![NotionNav 手机端预览图](./public/notionnavmobile.png)
-
-> 手机端预览
+|                   桌面端                    |                         移动端                          |
+| :-----------------------------------------: | :-----------------------------------------------------: |
+| ![NotionNav 预览图](./public/notionnav.png) | ![NotionNav 手机端预览图](./public/notionnavmobile.png) |
 
 ## ✨ 功能特性
 
