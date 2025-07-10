@@ -1,6 +1,5 @@
 import { NavMenuItem } from "@/types";
 import { Avatar } from "./Avatar";
-import { useState } from "react";
 
 interface FavoritesMenuProps {
   userRole: string;
@@ -15,8 +14,6 @@ export const FavoritesMenu = ({
   favorites,
   removeFavorite,
 }: FavoritesMenuProps) => {
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
-
   // 过滤用户有权限访问的收藏
   const userFavorites = favorites.filter(
     (item) =>
@@ -29,12 +26,6 @@ export const FavoritesMenu = ({
 
   const handleRemoveFavorite = (href: string) => {
     removeFavorite(href);
-  };
-
-  const handleClearAll = () => {
-    // 清空所有收藏
-    userFavorites.forEach((item) => removeFavorite(item.href));
-    setShowClearConfirm(false);
   };
 
   return (
@@ -50,33 +41,6 @@ export const FavoritesMenu = ({
           </svg>
           常用
         </h2>
-
-        <div className="flex items-center space-x-2">
-          {showClearConfirm ? (
-            <>
-              <button
-                onClick={handleClearAll}
-                className="text-xs px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
-              >
-                确认清空
-              </button>
-              <button
-                onClick={() => setShowClearConfirm(false)}
-                className="text-xs px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors"
-              >
-                取消
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => setShowClearConfirm(true)}
-              className="text-xs px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors"
-              title="清空所有收藏"
-            >
-              清空
-            </button>
-          )}
-        </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
@@ -88,13 +52,13 @@ export const FavoritesMenu = ({
               key={item.href}
               className="group relative bg-white/5 backdrop-blur-sm rounded-xl p-4 hover:bg-white/10 transition-all duration-300 cursor-pointer border border-white/10 hover:border-white/20"
             >
-              {/* 移除按钮 */}
+              {/* 移除按钮 - 优化样式 */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleRemoveFavorite(item.href);
                 }}
-                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 text-xs"
+                className="absolute -top-1 -right-1 w-5 h-5 bg-black/60 hover:bg-black/80 text-white/80 hover:text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 text-xs font-medium shadow-lg hover:shadow-xl hover:scale-110 backdrop-blur-sm border border-white/20 hover:border-white/40"
                 title="移除收藏"
               >
                 ×

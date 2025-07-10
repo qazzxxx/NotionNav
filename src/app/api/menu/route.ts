@@ -367,11 +367,6 @@ function extractCategoryOrder(database: NotionDatabase): string[] {
       property.type === "select" &&
       Array.isArray(property.options)
     ) {
-      // 输出 property.options 结构
-      console.log(
-        "Notion category property.options:",
-        JSON.stringify(property.options, null, 2)
-      );
       // 兼容 name、value、text 字段
       return property.options.map(
         (opt) => opt.name || opt.value || opt.text || ""

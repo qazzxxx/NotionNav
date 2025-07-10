@@ -13,7 +13,7 @@ export const LanToggle = ({ isLan, onToggle }: LanToggleProps) => {
         float: "right",
         backgroundColor: "rgba(42, 42, 42, 0.42)",
         cursor: "pointer",
-        marginTop: "-35px",
+        marginTop: "-37px",
       }}
       onClick={onToggle}
     >
