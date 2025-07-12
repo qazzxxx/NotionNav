@@ -12,6 +12,7 @@ export interface NavMenuItem {
   category?: string; // 添加分类属性
   menuTitle?: string; // 菜单标题（用于HTML标签名）
   menuIcon?: string; // 菜单图标
+  lastEditedTime?: number; // 最后编辑时间（时间戳）
 }
 
 export interface MenuData {

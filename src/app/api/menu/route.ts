@@ -100,6 +100,9 @@ function parseDatabaseToMenuItems(database: NotionDatabase): NavMenuItem[] {
           "category"
         ) || "其他";
 
+      // 获取最后编辑时间
+      const lastEditedTime = page.last_edited_time || 0;
+
       // 检查状态，只显示状态为"显示"或"active"的菜单项
       const isActive =
         status === "显示" || status === "active" || status === "Active";
@@ -114,6 +117,7 @@ function parseDatabaseToMenuItems(database: NotionDatabase): NavMenuItem[] {
           avatar: avatar.trim() || undefined,
           roles: roles.map((role: string) => role.trim()),
           category: category.trim(), // 添加分类信息
+          lastEditedTime: lastEditedTime, // 添加最后编辑时间
         });
       } else {
         if (!isActive) {

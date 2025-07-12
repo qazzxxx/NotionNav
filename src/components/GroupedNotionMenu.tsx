@@ -61,6 +61,15 @@ export const GroupedNotionMenu = memo(
         groups[category].push(item);
       });
 
+      // 对每个分类内的菜单项按照最后编辑时间排序（最新的在前）
+      Object.keys(groups).forEach((category) => {
+        groups[category].sort((a, b) => {
+          const timeA = a.lastEditedTime || 0;
+          const timeB = b.lastEditedTime || 0;
+          return timeB - timeA; // 降序排列，最新的在前
+        });
+      });
+
       return groups;
     }, [filteredItems]);
 

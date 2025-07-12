@@ -70,6 +70,9 @@ function parseDatabaseToMenuItems(database) {
         page.properties?.lanHref?.[0]?.[0] ||
         "";
 
+      // 获取最后编辑时间
+      const lastEditedTime = page.last_edited_time || 0;
+
       if (title && href) {
         menuItems.push({
           id: blockId,
@@ -80,6 +83,7 @@ function parseDatabaseToMenuItems(database) {
           avatar: avatar.trim() || undefined,
           roles: roles.map((role) => role.trim()),
           category: category.trim(),
+          lastEditedTime: lastEditedTime, // 添加最后编辑时间
         });
       }
     }
