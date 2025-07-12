@@ -1,7 +1,7 @@
 import { NotionAPI } from "notion-client";
+import { getNotionAPIConfig } from "@/config/notion";
 
-const notionToken = process.env.NOTION_TOKEN;
-const api = new NotionAPI(notionToken ? { authToken: notionToken } : undefined);
+const api = new NotionAPI(getNotionAPIConfig());
 
 export default async function handler(req, res) {
   try {

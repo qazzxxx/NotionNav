@@ -26,6 +26,13 @@ export function getNotionToken(): string | undefined {
 }
 
 /**
+ * 获取 Notion Active User（可选）
+ */
+export function getNotionActiveUser(): string | undefined {
+  return process.env.NOTION_ACTIVE_USER;
+}
+
+/**
  * 验证环境变量配置
  */
 export function validateEnvironment(): {
@@ -61,6 +68,8 @@ export function getEnvironmentInfo() {
   return {
     nodeEnv: process.env.NODE_ENV,
     notionPageId: process.env.NOTION_PAGE_ID || "not set",
+    notionToken: process.env.NOTION_TOKEN ? "set" : "not set",
+    notionActiveUser: process.env.NOTION_ACTIVE_USER ? "set" : "not set",
     isProduction: process.env.NODE_ENV === "production",
     isDevelopment: process.env.NODE_ENV === "development",
   };

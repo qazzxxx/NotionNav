@@ -7,10 +7,13 @@ import {
   NotionPropertyMapping,
   DatabaseMetadata,
 } from "@/types";
-import { NOTION_CONFIG, NOTION_PROPERTY_MAPPING } from "@/config/notion";
+import {
+  NOTION_CONFIG,
+  NOTION_PROPERTY_MAPPING,
+  getNotionAPIConfig,
+} from "@/config/notion";
 
-const notionToken = process.env.NOTION_TOKEN;
-const api = new NotionAPI(notionToken ? { authToken: notionToken } : undefined);
+const api = new NotionAPI(getNotionAPIConfig());
 
 export async function GET(request: NextRequest) {
   try {

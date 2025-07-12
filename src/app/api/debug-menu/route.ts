@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { NotionAPI } from "notion-client";
-import { NOTION_CONFIG, NOTION_PROPERTY_MAPPING } from "@/config/notion";
+import {
+  NOTION_CONFIG,
+  NOTION_PROPERTY_MAPPING,
+  getNotionAPIConfig,
+} from "@/config/notion";
 import {
   NotionDatabase,
   NotionPropertyValue,
@@ -8,8 +12,7 @@ import {
   DatabaseMetadata,
 } from "@/types";
 
-const notionToken = process.env.NOTION_TOKEN;
-const api = new NotionAPI(notionToken ? { authToken: notionToken } : undefined);
+const api = new NotionAPI(getNotionAPIConfig());
 
 export async function GET(request: NextRequest) {
   try {

@@ -1,4 +1,8 @@
-import { getNotionPageId } from "@/utils/env";
+import {
+  getNotionPageId,
+  getNotionToken,
+  getNotionActiveUser,
+} from "@/utils/env";
 
 // Notion配置
 export const NOTION_CONFIG = {
@@ -17,6 +21,33 @@ export const NOTION_CONFIG = {
     // TOOLS: "your-tools-database-id",
   },
 };
+
+/**
+ * 获取 Notion API 配置
+ * 统一管理 Notion API 的初始化参数
+ */
+export function getNotionAPIConfig() {
+  const token = getNotionToken();
+  const activeUser = getNotionActiveUser();
+
+  // 如果同时有 token 和 activeUser，使用完整配置
+  if (token && activeUser) {
+    return {
+      activeUser,
+      authToken: token,
+    };
+  }
+
+  // 如果只有 token，使用 token 配置
+  if (token) {
+    return {
+      authToken: token,
+    };
+  }
+
+  // 如果都没有，返回 undefined（使用默认配置）
+  return undefined;
+}
 
 // Notion数据库属性映射
 export const NOTION_PROPERTY_MAPPING = {
