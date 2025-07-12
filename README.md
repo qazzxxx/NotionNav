@@ -67,7 +67,7 @@
 
 1. **获取 Notion Token 和 Notion Active User ID**
 
-   - 两者都可以从您的 Web 浏览器中检索。查看工作流程后，打开 > Application > Cookie >的开发工具，然后复制 和 。分别是 activeUser： notion_user_id， authToken： token_v2。authTokenactiveUsertoken_v2notion_user_id
+   - 两者都可以从您的 Web 浏览器中检索。查看工作流程后，打开 > Application > Cookie >的开发工具，然后复制 和 。分别是 activeUser： notion_user_id， authToken： token_v2。
 
 2. **配置环境变量**
 
