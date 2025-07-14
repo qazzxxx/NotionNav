@@ -52,9 +52,11 @@ function parseDatabaseToMenuItems(database) {
         page.properties?.Link?.[0]?.[0] ||
         "";
 
+      // 优先级：Icon属性 > Avatar属性 > 页面图标 > 空
       const avatar =
-        page.properties?.Avatar?.[0]?.[0] ||
         page.properties?.Icon?.[0]?.[0] ||
+        page.properties?.Avatar?.[0]?.[0] ||
+        page.format?.page_icon ||
         "";
 
       const category =

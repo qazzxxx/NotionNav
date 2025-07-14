@@ -77,9 +77,16 @@ function parseDatabaseToMenuItems(database: NotionDatabase): NavMenuItem[] {
       const href =
         getPropertyValueByMapping(page.properties, propertyMapping, "url") ||
         "";
-      const avatar =
+      // 优先级：Icon属性 > Avatar属性 > 页面图标 > 空
+      let avatar =
         getPropertyValueByMapping(page.properties, propertyMapping, "avatar") ||
         "";
+
+      // 如果没有从属性字段获取到avatar，尝试从页面图标获取
+      if (!avatar && page.format?.page_icon) {
+        avatar = page.format.page_icon;
+      }
+
       const roles = getPropertyValueByMapping(
         page.properties,
         propertyMapping,
