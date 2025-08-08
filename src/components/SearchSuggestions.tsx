@@ -27,6 +27,7 @@ export const SearchSuggestions = ({
       (item) =>
         item.roles?.includes(userRole) &&
         (item.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+          item.href.toLowerCase().includes(searchValue.toLowerCase()) ||
           item.description?.toLowerCase().includes(searchValue.toLowerCase()))
     )
     .slice(0, 5); // 最多显示5个建议
