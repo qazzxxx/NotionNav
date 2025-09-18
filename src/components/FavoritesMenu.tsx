@@ -1,11 +1,13 @@
 import { NavMenuItem } from "@/types";
 import { Avatar } from "./Avatar";
+import LiquidGlassWrapper from "./LiquidGlassWrapper";
 
 interface FavoritesMenuProps {
   userRole: string;
   isLan: boolean;
   favorites: NavMenuItem[];
   removeFavorite: (href: string) => void;
+  isLiquidGlass: boolean;
 }
 
 export const FavoritesMenu = ({
@@ -13,6 +15,7 @@ export const FavoritesMenu = ({
   isLan,
   favorites,
   removeFavorite,
+  isLiquidGlass,
 }: FavoritesMenuProps) => {
   // 过滤用户有权限访问的收藏
   const userFavorites = favorites.filter(
@@ -48,29 +51,28 @@ export const FavoritesMenu = ({
           const url = isLan ? item.lanHref || item.href : item.href;
 
           return (
-            <div
-              key={item.href}
-              className="group relative bg-white/5 backdrop-blur-sm rounded-xl p-4 hover:bg-white/10 transition-all duration-300 cursor-pointer border border-white/10 hover:border-white/20"
-            >
-              {/* 移除按钮 - 优化样式 */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemoveFavorite(item.href);
-                }}
-                className="absolute -top-1 -right-1 w-5 h-5 bg-black/60 hover:bg-black/80 text-white/80 hover:text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 text-xs font-medium shadow-lg hover:shadow-xl hover:scale-110 backdrop-blur-sm border border-white/20 hover:border-white/40"
-                title="移除收藏"
-              >
-                ×
-              </button>
-
-              {/* 菜单项内容 */}
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center"
-              >
+            <LiquidGlassWrapper key={item.href} className="relative rounded-2xl" isActive={isLiquidGlass}>
+              <div className="group relative rounded-xl p-4 cursor-pointer"
+              style={{ backgroundColor: isLiquidGlass ? "transparent": "rgba(42, 42, 42, 0.42)" }}>
+                {/* 移除按钮 - 优化样式 */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveFavorite(item.href);
+                  }}
+                  className="absolute w-5 h-5 bg-black/60 hover:bg-black/80 text-white/80 hover:text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 text-xs font-medium shadow-lg hover:shadow-xl hover:scale-110 backdrop-blur-sm border border-white/20 hover:border-white/40"
+                  title="移除收藏"
+                  style={{ top: '5px', right: '5px' }}
+                >
+                  ×
+                </button>
+                {/* 菜单项内容 */}
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-center"
+                >
                 <div className="flex flex-col items-center space-y-2">
                   {/* 图标 */}
                   <div className="relative">
@@ -97,6 +99,7 @@ export const FavoritesMenu = ({
                 </div>
               </a>
             </div>
+            </LiquidGlassWrapper>
           );
         })}
       </div>

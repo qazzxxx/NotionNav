@@ -132,6 +132,11 @@ html, body {
   transform: scale(1);
 }
 
+.liquidGlass:hover .favorite-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
 /* 搜索结果动画 */
 .nav-item {
   opacity: 0;

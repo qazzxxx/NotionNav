@@ -1,20 +1,13 @@
-"use client"; // 声明这是一个客户端组件
+"use client";
 
 import { Suspense } from "react";
-
-// 导入React Hooks
 import { useEffect, useState } from "react";
-// 导入自定义组件
 import { Background } from "@/components/Background";
 import { GroupedNotionMenu } from "@/components/GroupedNotionMenu";
 import { FavoritesMenu } from "@/components/FavoritesMenu";
-// 导入常量配置
 import { MAX_BG_COUNT } from "@/config/constants";
-// 导入类型定义
 import { BingImage, NavMenuItem } from "@/types";
-// 导入工具函数
 import { storage } from "@/utils/storage";
-// 导入自定义Hooks
 import { useHitokoto } from "@/hooks/useHitokoto";
 import { useDeviceDetect } from "@/hooks/useDeviceDetect";
 import { useNotionMenu } from "@/hooks/useNotionMenu";
@@ -25,16 +18,18 @@ import { LanToggle } from "@/components/LanToggle";
 import { WallpaperInfo } from "@/components/WallpaperInfo";
 import { Lock } from "@/components/Lock";
 import { useSearchParams } from "next/navigation";
+import ThemeToggle from "@/components/ThemeToggle";
+import GlassFilter from "@/components/GlassFilter";
+import LiquidGlassWrapper from "@/components/LiquidGlassWrapper";
+import "./liquid-glass.css";
 
 // 创建一个包装组件来使用 useSearchParams
 function HomeContent() {
   const searchParams = useSearchParams();
 
-  const [userRole, setUserRole] = useState<string>("guest");
-
-  const [searchValue, setSearchValue] = useState(""); // 添加搜索值状态
-
-  // 使用Notion菜单Hook
+  // Hooks
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const { data: hitokoto, fetchHitokoto } = useHitokoto();
   const {
     menuItems: notionMenuItems,
     databaseMetadata,
@@ -42,44 +37,64 @@ function HomeContent() {
     error: notionError,
     categoryOrder,
   } = useNotionMenu();
-
-  // 使用Notion角色Hook
   const {
     roles: notionRoles,
     loading: _rolesLoading,
     error: _rolesError,
   } = useNotionRoles();
-
-  // 使用自定义Hook获取一言数据
-  const { data: hitokoto, fetchHitokoto } = useHitokoto();
-
-  // 使用自定义Hook检测是否为Apple设备
   const isApple = useDeviceDetect();
 
-  // 管理语言切换状态
+  // States
+  const [isLiquidGlass, setIsLiquidGlass] = useState(() => {
+    const savedTheme = storage.get('theme.liquidGlass');
+    return savedTheme ? JSON.parse(savedTheme) : false;
+  });
+  const [userRole, setUserRole] = useState<string>("guest");
+  const [searchValue, setSearchValue] = useState("");
   const [isLan, setIsLan] = useState(storage.get("isLan") === "true");
-
   const [wallpaperInfo, setWallpaperInfo] = useState<BingImage>();
-
-  // 添加锁屏状态
   const [isLocked, setIsLocked] = useState(() => {
-    // 如果URL中有role参数，初始状态为验证中而不是锁定
     const role = searchParams.get("role");
-    return !role; // 有role参数时初始不锁定，没有role参数时初始锁定
+    return !role;
   });
-
-  // 添加URL角色验证状态
   const [isValidatingUrlRole, setIsValidatingUrlRole] = useState(() => {
-    // 如果URL中有role参数，初始状态为验证中
     const role = searchParams.get("role");
-    return !!role; // 有role参数时初始为验证中
+    return !!role;
   });
-
-  // 添加角色检查状态
   const [isCheckingRoles, setIsCheckingRoles] = useState(true);
 
-  // 使用自定义Hook管理收藏状态
-  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
+  // Effects
+  useEffect(() => {
+    const savedTheme = storage.get('theme.liquidGlass');
+    if (savedTheme) {
+      try {
+        setIsLiquidGlass(JSON.parse(savedTheme));
+      } catch {
+        setIsLiquidGlass(false);
+      }
+    }
+  }, []);
+
+  // Utility functions
+  // Theme handling
+
+
+  const getLiquidGlassClasses = (baseClasses: string) => {
+    if (!isLiquidGlass) return baseClasses;
+    return `${baseClasses} liquidGlass`;
+  };
+
+
+
+  // Theme switching handler
+  const handleThemeToggle = () => {
+    setIsLiquidGlass((prev: boolean) => !prev);
+    storage.set('theme.liquidGlass', JSON.stringify(!isLiquidGlass));
+  };
+
+  // 继续其他逻辑
+
+
 
   // 动态设置页面标题和favicon
   useEffect(() => {
@@ -303,6 +318,7 @@ function HomeContent() {
         notionLoading={notionLoading}
         onWallpaperInfo={setWallpaperInfo}
       />
+      <GlassFilter />
 
       {/* 角色检查加载状态 */}
       {isCheckingRoles && (
@@ -341,22 +357,33 @@ function HomeContent() {
           {/* 头部搜索区域 */}
           <header className="space-y-4 mb-3 mt-3">
             {/* 搜索表单 */}
-            <SearchBar
-              value={searchValue}
-              hitokoto={hitokoto}
-              onSearch={onSearch}
-              onSubmit={onSubmit}
-              menuItems={notionMenuItems}
-              userRole={userRole}
-              isLan={isLan}
-              onSelectMenuItem={handleSelectMenuItem}
-            />
+              <SearchBar
+                value={searchValue}
+                hitokoto={hitokoto}
+                onSearch={onSearch}
+                onSubmit={onSubmit}
+                menuItems={notionMenuItems}
+                userRole={userRole}
+                isLan={isLan}
+                onSelectMenuItem={handleSelectMenuItem}
+              />
 
-            <LanToggle isLan={isLan} onToggle={handleLanToggle} />
+            <div style={{
+              float: "right",
+              backgroundColor: "rgba(42, 42, 42, 0.42)",
+              cursor: "pointer",
+              marginTop: "-37px",
+            }} className="rounded-2xl">
+              <LiquidGlassWrapper className="rounded-2xl" isActive={isLiquidGlass}>
+                  <ThemeToggle onToggle={handleThemeToggle} isLiquidGlass={isLiquidGlass} />
+              </LiquidGlassWrapper>
+            </div>
 
             {/* 操作按钮组 */}
             {wallpaperInfo ? (
-              <WallpaperInfo wallpaperInfo={wallpaperInfo} />
+              <LiquidGlassWrapper isActive={isLiquidGlass}>
+                <WallpaperInfo wallpaperInfo={wallpaperInfo} />
+              </LiquidGlassWrapper>
             ) : null}
 
             {/* 显示锁屏状态 */}
@@ -364,13 +391,14 @@ function HomeContent() {
 
           {/* Notion菜单 */}
           {!notionLoading && !notionError && notionMenuItems.length > 0 && (
-            <>
+            <div className="space-y-4">
               {/* 收藏菜单 */}
               <FavoritesMenu
                 userRole={userRole}
                 isLan={isLan}
                 favorites={favorites}
                 removeFavorite={removeFavorite}
+                isLiquidGlass={isLiquidGlass}
               />
 
               {/* 分组菜单 */}
@@ -382,14 +410,14 @@ function HomeContent() {
                 removeFavorite={removeFavorite}
                 isFavorite={isFavorite}
                 categoryOrder={categoryOrder}
+                isLiquidGlass={isLiquidGlass}
               />
-            </>
+            </div>
           )}
-
-          {/* 底部信息展示区域 */}
-          {/* {isLan && <Footer daysUntil={daysUntil} />} */}
         </div>
       </div>
+
+      {/* 主题切换按钮已移至顶部 */}
     </div>
   );
 }

@@ -1,0 +1,94 @@
+.liquid-glass {
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: inherit;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.liquid-glass-wrapper {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass-effect {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  filter: url(#liquid-glass);
+  border-radius: inherit;
+  animation: liquidWave 8s ease-in-out infinite;
+}
+
+@keyframes liquidWave {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(1.02) translateY(-5px);
+  }
+}
+
+.liquid-glass-shine {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.liquid-glass:hover .liquid-glass-shine {
+  opacity: 1;
+}
+
+.nav-item {
+  transform: translateZ(0);
+  will-change: transform;
+  transition: transform 0.3s ease;
+}
+
+.nav-item:hover {
+  transform: translateY(-2px);
+}
+
+.nav-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-item:hover::after {
+  opacity: 1;
+}
+
+.favorite-icon {
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.nav-item:hover .favorite-icon {
+  opacity: 0.8;
+}
+
+.favorite-icon:hover {
+  transform: scale(1.2);
+  opacity: 1 !important;
+}

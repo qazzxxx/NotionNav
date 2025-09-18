@@ -1,0 +1,51 @@
+/* 液态玻璃效果的基础样式 */
+.liquidGlass {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+  transform: translateY(0) scale(1);
+}
+
+.liquidGlass:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.liquidGlass-effect {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  backdrop-filter: blur(3px);
+  filter: url(#glass-distortion);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.liquidGlass-tint {
+  z-index: 1;
+  position: absolute;
+  inset: 0;
+  background: #6d6d6d40;
+}
+
+.liquidGlass-shine {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  box-shadow: inset 1px 1px 1px #ffffff80, inset 0px -1px 1px 0px #ffffff80
+}
+
+/* 适配暗色主题 */
+.dark .liquidGlass-tint {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* SVG 滤镜 */
+.glass-filter {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+}

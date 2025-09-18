@@ -2,6 +2,7 @@ import { NavMenuItem } from "@/types";
 import { HeartIcon } from "./icons/HeartIcon";
 import { Avatar } from "./Avatar";
 import { useCallback, memo, useState, useEffect, useMemo } from "react";
+import LiquidGlassWrapper from "./LiquidGlassWrapper";
 
 interface GroupedNotionMenuProps {
   menuItems: NavMenuItem[];
@@ -11,6 +12,7 @@ interface GroupedNotionMenuProps {
   removeFavorite: (href: string) => void;
   isFavorite: (href: string) => boolean;
   categoryOrder?: string[];
+  isLiquidGlass: boolean;
 }
 
 export const GroupedNotionMenu = memo(
@@ -22,6 +24,7 @@ export const GroupedNotionMenu = memo(
     removeFavorite,
     isFavorite,
     categoryOrder = [],
+    isLiquidGlass,
   }: GroupedNotionMenuProps) => {
     // 添加客户端渲染控制
     const [mounted, setMounted] = useState(false);
@@ -114,9 +117,10 @@ export const GroupedNotionMenu = memo(
 
             <div className="grid md:grid-cols-2 sm:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
               {groupedItems[category].map((item, index) => (
-                <div
+                <LiquidGlassWrapper
                   key={item.id || item.href}
-                  className="relative nav-item rounded-2xl"
+                  isActive={isLiquidGlass}
+                  className="relative rounded-2xl"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <HeartIcon
@@ -130,7 +134,7 @@ export const GroupedNotionMenu = memo(
                     href={isLan ? item.lanHref || item.href : item.href}
                     target="_blank"
                     rel="noreferrer"
-                    style={{ backgroundColor: "rgba(42, 42, 42, 0.42)" }}
+                    style={{ backgroundColor: isLiquidGlass ? "transparent": "rgba(42, 42, 42, 0.42)" }}
                     className="flex justify-items-start items-center rounded-2xl space-x-6 p-5 text-white"
                   >
                     <Avatar
@@ -149,7 +153,7 @@ export const GroupedNotionMenu = memo(
                       </div>
                     </div>
                   </a>
-                </div>
+                </LiquidGlassWrapper>
               ))}
             </div>
           </div>
