@@ -381,12 +381,9 @@ function HomeContent() {
               backgroundColor: "rgba(42, 42, 42, 0.42)",
               cursor: "pointer",
               marginTop: "-37px",
-            }} className="rounded-2xl">
-              <LiquidGlassWrapper className="rounded-2xl" hoverEffect={false} isActive={isLiquidGlass}>
-                        {/* 设置按钮和模态框 */}
-      <SettingsButton onClick={() => setIsSettingsOpen(true)} />
-      
-              </LiquidGlassWrapper>
+            }} className="rounded-2xl relative">
+                  {/* 设置按钮和模态框 */}
+                  <SettingsButton onClick={() => setIsSettingsOpen(true)} />
             </div>
 
             {/* 操作按钮组 */}
