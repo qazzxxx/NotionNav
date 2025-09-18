@@ -302,10 +302,10 @@ function HomeContent() {
     setUserRole(role);
     setIsLocked(false);
     // 获取搜索输入框并聚焦
-    const searchInput = document.querySelector("#search") as HTMLInputElement;
-    if (searchInput) {
-      searchInput.focus();
-    }
+    // const searchInput = document.querySelector("#search") as HTMLInputElement;
+    // if (searchInput) {
+    //   searchInput.focus();
+    // }
   };
 
   return (
@@ -366,6 +366,7 @@ function HomeContent() {
                 userRole={userRole}
                 isLan={isLan}
                 onSelectMenuItem={handleSelectMenuItem}
+                isLiquidGlass={isLiquidGlass}
               />
 
             <div style={{
@@ -374,7 +375,7 @@ function HomeContent() {
               cursor: "pointer",
               marginTop: "-37px",
             }} className="rounded-2xl">
-              <LiquidGlassWrapper className="rounded-2xl" isActive={isLiquidGlass}>
+              <LiquidGlassWrapper className="rounded-2xl" hoverEffect={false} isActive={isLiquidGlass}>
                   <ThemeToggle onToggle={handleThemeToggle} isLiquidGlass={isLiquidGlass} />
               </LiquidGlassWrapper>
             </div>

@@ -5,12 +5,14 @@ interface LiquidGlassWrapperProps {
   className?: string;
   isActive?: boolean;
   style?: React.CSSProperties;
+  hoverEffect?: boolean;
 }
 
 const LiquidGlassWrapper: React.FC<LiquidGlassWrapperProps> = ({
   children,
   className = '',
   isActive = true,
+  hoverEffect = true,
   style
 }) => {
   if (!isActive) {
@@ -18,7 +20,7 @@ const LiquidGlassWrapper: React.FC<LiquidGlassWrapperProps> = ({
   }
 
   return (
-    <div style={{...style}} className={`liquidGlass ${className}`}>
+    <div style={{...style}} className={`liquidGlass ${hoverEffect? 'liquidGlassHover': ''} ${className}`}>
       <div className="liquidGlass-effect" />
       <div className="liquidGlass-tint" />
       <div className="liquidGlass-shine rounded-2xl" />

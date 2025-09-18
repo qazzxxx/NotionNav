@@ -12,6 +12,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ onToggle, isLiquidGlass }) =>
       className="flex items-center gap-2 rounded-full px-2 py-2 text-sm text-white/80 hover:text-white
                  transition-all duration-300 ease-in-out"
       title={isLiquidGlass ? '切换到普通主题' : '切换到液态玻璃主题'}
+      style={{cursor: 'pointer'}}
     >
       {isLiquidGlass ? (
         <>

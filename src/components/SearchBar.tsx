@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { NavMenuItem } from "@/types";
 import { SearchSuggestions } from "./SearchSuggestions";
+import LiquidGlassWrapper from "./LiquidGlassWrapper";
 
 interface SearchBarProps {
   hitokoto: {
@@ -13,6 +14,7 @@ interface SearchBarProps {
   menuItems?: NavMenuItem[];
   userRole?: string;
   isLan?: boolean;
+  isLiquidGlass?: boolean;
   onSelectMenuItem?: (item: NavMenuItem) => void;
 }
 
@@ -25,6 +27,7 @@ export const SearchBar = ({
   userRole = "guest",
   isLan = false,
   onSelectMenuItem,
+  isLiquidGlass = false,
 }: SearchBarProps) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -69,18 +72,18 @@ export const SearchBar = ({
   return (
     <div ref={searchRef} className="relative md:w-1/3 w-9/12 m-auto">
       <form className="group relative" onSubmit={onSubmit}>
-        <input
-          className="focus:ring-2 inputsearch focus:ring-blue-500 focus:outline-none text-white appearance-none w-full text-sm leading-6 placeholder-gray-400 rounded-full py-2 pl-4 pr-16 shadow-sm"
-          type="text"
-          id="search"
-          style={{ backgroundColor: "rgba(42, 42, 42, 0.42)" }}
-          aria-label="搜索"
-          placeholder={`${hitokoto.hitokoto} —— ${hitokoto.from}`}
-          autoFocus
-          value={value}
-          onFocus={handleInputFocus}
-          onChange={handleInputChange}
-        />
+        <LiquidGlassWrapper isActive={isLiquidGlass} hoverEffect={false} className="relative rounded-2xl">
+          <input
+            className={`focus:outline-none ${isLiquidGlass ? '': 'focus:ring-2 focus:ring-blue-500 inputsearch'} text-white appearance-none w-full text-sm leading-6 placeholder-gray-400 rounded-full py-2 pl-4 pr-16 shadow-sm`}
+            type="text"
+            id="search"
+            style={{ backgroundColor: isLiquidGlass ? "transparent": "rgba(42, 42, 42, 0.42)" }}
+            aria-label="搜索"
+            placeholder={`${hitokoto.hitokoto} —— ${hitokoto.from}`}
+            value={value}
+            onFocus={handleInputFocus}
+            onChange={handleInputChange}
+          />
         <button
           type="submit"
           className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5
@@ -102,6 +105,8 @@ export const SearchBar = ({
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
         </button>
+
+        </LiquidGlassWrapper>
       </form>
 
       {/* 搜索建议 */}
@@ -112,6 +117,7 @@ export const SearchBar = ({
         isLan={isLan}
         onSelectItem={handleSelectItem}
         visible={showSuggestions}
+        isLiquidGlass={isLiquidGlass}
       />
     </div>
   );

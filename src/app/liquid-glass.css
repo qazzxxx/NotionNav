@@ -3,13 +3,16 @@
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
-  transform: translateY(0) scale(1);
 }
 
-.liquidGlass:hover {
+liquidGlassHover{
+  transform: translateY(0) scale(1);
+}
+.liquidGlassHover:hover {
   transform: translateY(-5px) scale(1.02);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
+
 
 .liquidGlass-effect {
   position: absolute;

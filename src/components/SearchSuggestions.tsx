@@ -1,6 +1,7 @@
 import { NavMenuItem } from "@/types";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import LiquidGlassWrapper from "./LiquidGlassWrapper";
 
 interface SearchSuggestionsProps {
   searchValue: string;
@@ -9,6 +10,7 @@ interface SearchSuggestionsProps {
   isLan: boolean;
   onSelectItem: (item: NavMenuItem) => void;
   visible: boolean;
+  isLiquidGlass?: boolean;
 }
 
 export const SearchSuggestions = ({
@@ -17,6 +19,7 @@ export const SearchSuggestions = ({
   userRole,
   onSelectItem,
   visible,
+  isLiquidGlass = false,
 }: SearchSuggestionsProps) => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const suggestionsRef = useRef<HTMLDivElement>(null);
@@ -79,69 +82,70 @@ export const SearchSuggestions = ({
     };
   }, [visible, matchingItems, selectedIndex, onSelectItem]);
 
-  if (
-    !visible ||
-    searchValue.trim().length === 0 ||
-    matchingItems.length === 0
-  ) {
+  if (!visible || searchValue.trim().length === 0 || matchingItems.length === 0) {
     return null;
   }
 
   return (
-    <div
-      ref={suggestionsRef}
-      className="absolute top-full left-0 right-0 z-50 max-h-60 overflow-y-auto rounded-xl shadow-xl border border-white/10 backdrop-blur-lg bg-black/40 dark:bg-black/60 transition-all duration-200"
-      style={{
-        backdropFilter: "blur(16px)",
+    
+      <div
+        ref={suggestionsRef}
+        className="absolute w-full mt-2 rounded-xl overflow-hidden z-50"
+        style={{
+          maxHeight: "400px",
+          overflowY: "auto",
+          ...(isLiquidGlass ? {} : {         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
         boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.18)",
         border: "1px solid rgba(255,255,255,0.15)",
-      }}
-    >
-      {matchingItems.map((item, index) => (
-        <div
-          key={item.id || item.href}
-          className={`flex items-center space-x-3 p-3 cursor-pointer transition-colors rounded-lg ${
-            index === selectedIndex ? "bg-black/20" : "hover:bg-black/10"
-          }`}
-          onClick={() => onSelectItem(item)}
-        >
-          {item.avatar ? (
-            <Image
-              src={item.avatar}
-              alt={item.title}
-              className="rounded w-6 h-6"
-              width={24}
-              height={24}
-              loading="lazy"
-            />
-          ) : (
-            <div
-              className="w-6 h-6 rounded flex items-center justify-center text-xs text-white"
-              style={{
-                background: "#673ab7",
-              }}
-            >
-              {item.title.charAt(0)}
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <div
-              className={`font-medium truncate ${
-                index === selectedIndex ? "text-blue-400" : "text-white"
-              }`}
-            >
-              {item.title}
-            </div>
-            {item.description && (
-              <div className="text-sm text-gray-300 truncate">
-                {item.description}
+        })}}
+      >
+        <LiquidGlassWrapper isActive={isLiquidGlass} hoverEffect={false} className="relative rounded-2xl">
+        {matchingItems.map((item, index) => (
+          <div
+            key={item.id || item.href}
+            className={`flex items-center space-x-3 p-3 cursor-pointer transition-colors rounded-lg ${
+              index === selectedIndex ? "bg-black/20" : "hover:bg-black/10"
+            }`}
+            onClick={() => onSelectItem(item)}
+          >
+            {item.avatar ? (
+              <Image
+                src={item.avatar}
+                alt={item.title}
+                className="rounded w-6 h-6"
+                width={24}
+                height={24}
+                loading="lazy"
+              />
+            ) : (
+              <div
+                className="w-6 h-6 rounded flex items-center justify-center text-xs text-white"
+                style={{
+                  background: "#673ab7",
+                }}
+              >
+                {item.title.charAt(0)}
               </div>
             )}
+            <div className="flex-1 min-w-0">
+              <div
+                className={`font-medium truncate ${
+                  index === selectedIndex ? "text-blue-400" : "text-white"
+                }`}
+              >
+                {item.title}
+              </div>
+              {item.description && (
+                <div className="text-sm text-gray-300 truncate">
+                  {item.description}
+                </div>
+              )}
+            </div>
+            <div className="text-xs text-gray-300">{item.category || "其他"}</div>
           </div>
-          <div className="text-xs text-gray-300">{item.category || "其他"}</div>
-        </div>
-      ))}
+        ))}
+      </LiquidGlassWrapper>
     </div>
   );
 };
