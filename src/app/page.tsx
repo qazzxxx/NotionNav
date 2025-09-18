@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Background } from "@/components/Background";
 import { GroupedNotionMenu } from "@/components/GroupedNotionMenu";
 import { FavoritesMenu } from "@/components/FavoritesMenu";
@@ -18,9 +18,10 @@ import { LanToggle } from "@/components/LanToggle";
 import { WallpaperInfo } from "@/components/WallpaperInfo";
 import { Lock } from "@/components/Lock";
 import { useSearchParams } from "next/navigation";
-import ThemeToggle from "@/components/ThemeToggle";
 import GlassFilter from "@/components/GlassFilter";
 import LiquidGlassWrapper from "@/components/LiquidGlassWrapper";
+import SettingsButton from "@/components/SettingsButton";
+import SettingsModal from "@/components/SettingsModal";
 import "./liquid-glass.css";
 
 // 创建一个包装组件来使用 useSearchParams
@@ -45,9 +46,10 @@ function HomeContent() {
   const isApple = useDeviceDetect();
 
   // States
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLiquidGlass, setIsLiquidGlass] = useState(() => {
-    const savedTheme = storage.get('theme.liquidGlass');
-    return savedTheme ? JSON.parse(savedTheme) : false;
+    const savedTheme = storage.get('theme');
+    return savedTheme === 'liquid-glass';
   });
   const [userRole, setUserRole] = useState<string>("guest");
   const [searchValue, setSearchValue] = useState("");
@@ -65,10 +67,10 @@ function HomeContent() {
 
   // Effects
   useEffect(() => {
-    const savedTheme = storage.get('theme.liquidGlass');
-    if (savedTheme) {
+    const savedTheme = storage.get('theme');
+    if (savedTheme === 'liquid-glass') {
       try {
-        setIsLiquidGlass(JSON.parse(savedTheme));
+        setIsLiquidGlass(savedTheme === 'liquid-glass');
       } catch {
         setIsLiquidGlass(false);
       }
@@ -87,12 +89,16 @@ function HomeContent() {
 
 
   // Theme switching handler
-  const handleThemeToggle = () => {
-    setIsLiquidGlass((prev: boolean) => !prev);
-    storage.set('theme.liquidGlass', JSON.stringify(!isLiquidGlass));
-  };
+  const handleThemeToggle = useCallback(() => {
+    setIsLiquidGlass(!isLiquidGlass);
+    storage.set('theme', !isLiquidGlass ? 'liquid-glass' : 'default');
+  }, [isLiquidGlass]);
 
-  // 继续其他逻辑
+  // 内外网切换处理
+  const handleNetworkToggle = useCallback(() => {
+    setIsLan(!isLan);
+    storage.set('network', !isLan ? 'lan' : 'wan');
+  }, [isLan]);  // 继续其他逻辑
 
 
 
@@ -352,6 +358,7 @@ function HomeContent() {
         className={`fixed inset-0 overflow-y-auto overflow-x-hidden transition-transform duration-500 ease-out ${
           isLocked ? "translate-y-full" : "translate-y-0"
         }`}
+        id="main-content"
       >
         <div className="px-6 py-8">
           {/* 头部搜索区域 */}
@@ -376,7 +383,9 @@ function HomeContent() {
               marginTop: "-37px",
             }} className="rounded-2xl">
               <LiquidGlassWrapper className="rounded-2xl" hoverEffect={false} isActive={isLiquidGlass}>
-                  <ThemeToggle onToggle={handleThemeToggle} isLiquidGlass={isLiquidGlass} />
+                        {/* 设置按钮和模态框 */}
+      <SettingsButton onClick={() => setIsSettingsOpen(true)} />
+      
               </LiquidGlassWrapper>
             </div>
 
@@ -389,6 +398,15 @@ function HomeContent() {
 
             {/* 显示锁屏状态 */}
           </header>
+
+          <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        onThemeToggle={handleThemeToggle}
+        onNetworkToggle={handleNetworkToggle}
+        isLiquidGlass={isLiquidGlass}
+        isLan={isLan}
+      />
 
           {/* Notion菜单 */}
           {!notionLoading && !notionError && notionMenuItems.length > 0 && (
