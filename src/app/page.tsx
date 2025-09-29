@@ -364,7 +364,6 @@ function HomeContent() {
         isOpen={showEmbedModal}
         onClose={() => setShowEmbedModal(false)}
         url={embedUrl}
-        isLiquidGlass={isLiquidGlass}
       />
 
       {/* 角色检查加载状态 */}

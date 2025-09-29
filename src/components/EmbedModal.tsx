@@ -5,14 +5,12 @@ interface EmbedModalProps {
   isOpen: boolean;
   onClose: () => void;
   url: string;
-  isLiquidGlass: boolean;
 }
 
 const EmbedModal: React.FC<EmbedModalProps> = ({
   isOpen,
   onClose,
   url,
-  isLiquidGlass,
 }) => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -97,7 +95,6 @@ const EmbedModal: React.FC<EmbedModalProps> = ({
       {/* 嵌入层 */}
       <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
         <div className="w-[90vw] h-[85vh]">
-          <LiquidGlassWrapper isActive={isLiquidGlass} className="relative rounded-2xl h-full">
           <div className="flex flex-col h-full rounded-xl overflow-hidden">
             {/* 顶部栏 */}
             <div className="flex justify-between items-center p-3 bg-black/30">
@@ -179,7 +176,6 @@ const EmbedModal: React.FC<EmbedModalProps> = ({
               )}
             </div>
           </div>
-        </LiquidGlassWrapper>
         </div>
       </div>
     </>
