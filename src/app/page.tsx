@@ -22,6 +22,7 @@ import GlassFilter from "@/components/GlassFilter";
 import LiquidGlassWrapper from "@/components/LiquidGlassWrapper";
 import SettingsButton from "@/components/SettingsButton";
 import SettingsModal from "@/components/SettingsModal";
+import EmbedModal from "@/components/EmbedModal";
 import "./liquid-glass.css";
 
 // 创建一个包装组件来使用 useSearchParams
@@ -51,6 +52,11 @@ function HomeContent() {
     const savedTheme = storage.get('theme');
     return savedTheme === 'liquid-glass';
   });
+  const [isEmbedOpen, setIsEmbedOpen] = useState(() => {
+    return storage.get('embedOpen') === 'true';
+  });
+  const [embedUrl, setEmbedUrl] = useState('');
+  const [showEmbedModal, setShowEmbedModal] = useState(false);
   const [userRole, setUserRole] = useState<string>("guest");
   const [searchValue, setSearchValue] = useState("");
   const [isLan, setIsLan] = useState(storage.get("isLan") === "true");
@@ -98,7 +104,33 @@ function HomeContent() {
   const handleNetworkToggle = useCallback(() => {
     setIsLan(!isLan);
     storage.set('network', !isLan ? 'lan' : 'wan');
-  }, [isLan]);  // 继续其他逻辑
+  }, [isLan]);
+  
+  // 嵌入打开切换处理
+  const handleEmbedToggle = useCallback(() => {
+    setIsEmbedOpen(!isEmbedOpen);
+    storage.set('embedOpen', (!isEmbedOpen).toString());
+  }, [isEmbedOpen]);
+  
+  // 处理链接点击
+  const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
+    if (isEmbedOpen) {
+      e.preventDefault();
+      setEmbedUrl(url);
+      setShowEmbedModal(true);
+    }
+  }, [isEmbedOpen]);
+  
+  // 将handleLinkClick函数添加到window对象上，以便在其他组件中使用
+  useEffect(() => {
+    // 添加类型定义到window对象
+    (window as any).handleLinkClick = handleLinkClick;
+    
+    return () => {
+      // 清理函数
+      delete (window as any).handleLinkClick;
+    };
+  }, [handleLinkClick]);
 
 
 
@@ -326,6 +358,15 @@ function HomeContent() {
       />
       <GlassFilter />
 
+
+      {/* 嵌入层Modal */}
+      <EmbedModal
+        isOpen={showEmbedModal}
+        onClose={() => setShowEmbedModal(false)}
+        url={embedUrl}
+        isLiquidGlass={isLiquidGlass}
+      />
+
       {/* 角色检查加载状态 */}
       {isCheckingRoles && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -401,9 +442,12 @@ function HomeContent() {
         onClose={() => setIsSettingsOpen(false)}
         onThemeToggle={handleThemeToggle}
         onNetworkToggle={handleNetworkToggle}
+        onEmbedToggle={handleEmbedToggle}
         isLiquidGlass={isLiquidGlass}
         isLan={isLan}
+        isEmbedOpen={isEmbedOpen}
       />
+      
 
           {/* Notion菜单 */}
           {!notionLoading && !notionError && notionMenuItems.length > 0 && (

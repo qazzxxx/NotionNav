@@ -6,8 +6,10 @@ interface SettingsModalProps {
   onClose: () => void;
   onThemeToggle: () => void;
   onNetworkToggle: () => void;
+  onEmbedToggle?: () => void;
   isLiquidGlass: boolean;
   isLan: boolean;
+  isEmbedOpen?: boolean;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -15,8 +17,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
   onThemeToggle,
   onNetworkToggle,
+  onEmbedToggle,
   isLiquidGlass,
   isLan,
+  isEmbedOpen = false,
 }) => {
   useEffect(() => {
     const scrollContainer = document.getElementById('main-content') || document.body;
@@ -111,6 +115,30 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   />
                 </button>
               </div>
+
+              {/* 嵌入打开设置 */}
+              {onEmbedToggle && (
+                <div className="flex items-center justify-between p-3 rounded-lg hover:bg-white/10 transition-colors">
+                  <div className="text-white">
+                    <div className="font-medium">嵌入打开链接</div>
+                    <div className="text-sm text-white/70">
+                      {isEmbedOpen ? '使用内嵌iframe打开' : '使用新标签页打开'}
+                    </div>
+                  </div>
+                  <button
+                    onClick={onEmbedToggle}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      isEmbedOpen ? 'bg-blue-600' : 'bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        isEmbedOpen ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </LiquidGlassWrapper>
