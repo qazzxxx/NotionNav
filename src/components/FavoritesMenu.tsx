@@ -68,7 +68,7 @@ export const FavoritesMenu = ({
                 </button>
                 {/* 菜单项内容 */}
                 <a
-                  href={url}
+                  // href={url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-center"
