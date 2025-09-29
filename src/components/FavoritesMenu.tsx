@@ -72,7 +72,7 @@ export const FavoritesMenu = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-center"
-                  onClick={(e: React.MouseEvent<HTMLAnchorElement>) => window.handleLinkClick && window.handleLinkClick(e, url)}
+                  onClick={(e: React.MouseEvent<HTMLAnchorElement>) => window.handleLinkClick && window.handleLinkClick(e, url, item.target)}
                 >
                 <div className="flex flex-col items-center space-y-2">
                   {/* 图标 */}

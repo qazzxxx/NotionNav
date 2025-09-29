@@ -1,3 +1,3 @@
 interface Window {
-  handleLinkClick?: (e: React.MouseEvent<HTMLAnchorElement>, url: string) => void;
+  handleLinkClick?: (e: React.MouseEvent<HTMLAnchorElement>, url: string, target?: string) => void;
 }

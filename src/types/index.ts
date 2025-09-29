@@ -7,6 +7,7 @@ export interface NavMenuItem {
   avatar?: string;
   avatarText?: string;
   avatarColor?: string;
+  target?: string; // 添加打开方式属性
   isFavorite?: boolean; // 添加收藏状态
   roles: string[]; // 角色权限
   category?: string; // 添加分类属性

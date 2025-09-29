@@ -74,4 +74,7 @@ export const NOTION_PROPERTY_MAPPING = {
 
   // 状态属性
   STATUS: ["Status", "status", "State", "state"],
+
+  // 打开方式
+  TARGET: ["Target", "target", "Open", "open"],
 };

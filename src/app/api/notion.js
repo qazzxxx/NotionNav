@@ -72,6 +72,11 @@ function parseDatabaseToMenuItems(database) {
         page.properties?.lanHref?.[0]?.[0] ||
         "";
 
+        const target =
+        page.properties?.Target?.[0]?.[0] ||
+        page.properties?.target?.[0]?.[0] ||
+        "";
+
       // 获取最后编辑时间
       const lastEditedTime = page.last_edited_time || 0;
 
@@ -82,6 +87,7 @@ function parseDatabaseToMenuItems(database) {
           description: description.trim(),
           href: href.trim(),
           lanHref: lanHref.trim() || undefined,
+          target: target.trim() || undefined,
           avatar: avatar.trim() || undefined,
           roles: roles.map((role) => role.trim()),
           category: category.trim(),

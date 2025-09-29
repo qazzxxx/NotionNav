@@ -96,6 +96,10 @@ function parseDatabaseToMenuItems(database: NotionDatabase): NavMenuItem[] {
         getPropertyValueByMapping(page.properties, propertyMapping, "lanurl") ||
         "";
 
+      const target =
+        getPropertyValueByMapping(page.properties, propertyMapping, "target") ||
+        "";
+
       // 新增：status和category属性
       const status =
         getPropertyValueByMapping(page.properties, propertyMapping, "status") ||
@@ -121,6 +125,7 @@ function parseDatabaseToMenuItems(database: NotionDatabase): NavMenuItem[] {
           description: description.trim(),
           href: href.trim(),
           lanHref: lanHref.trim() || undefined,
+          target: target.trim() || undefined,
           avatar: avatar.trim() || undefined,
           roles: roles.map((role: string) => role.trim()),
           category: category.trim(), // 添加分类信息

@@ -52,9 +52,6 @@ function HomeContent() {
     const savedTheme = storage.get('theme');
     return savedTheme === 'liquid-glass';
   });
-  const [isEmbedOpen, setIsEmbedOpen] = useState(() => {
-    return storage.get('embedOpen') === 'true';
-  });
   const [embedUrl, setEmbedUrl] = useState('');
   const [showEmbedModal, setShowEmbedModal] = useState(false);
   const [userRole, setUserRole] = useState<string>("guest");
@@ -106,20 +103,21 @@ function HomeContent() {
     storage.set('network', !isLan ? 'lan' : 'wan');
   }, [isLan]);
   
-  // 嵌入打开切换处理
-  const handleEmbedToggle = useCallback(() => {
-    setIsEmbedOpen(!isEmbedOpen);
-    storage.set('embedOpen', (!isEmbedOpen).toString());
-  }, [isEmbedOpen]);
   
   // 处理链接点击
-  const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
-    if (isEmbedOpen) {
+  const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, url: string, target?: string,) => {
+    if (target==="弹框打开") {
       e.preventDefault();
       setEmbedUrl(url);
       setShowEmbedModal(true);
+    } else if (target === "当前窗口打开") {
+      // 在当前标签页打开
+      window.location.href = url;
+    } else {
+      // 默认行为：处理在新标签页打开的链接
+      window.open(url, "_blank");
     }
-  }, [isEmbedOpen]);
+  }, []);
   
   // 将handleLinkClick函数添加到window对象上，以便在其他组件中使用
   useEffect(() => {
@@ -441,10 +439,8 @@ function HomeContent() {
         onClose={() => setIsSettingsOpen(false)}
         onThemeToggle={handleThemeToggle}
         onNetworkToggle={handleNetworkToggle}
-        onEmbedToggle={handleEmbedToggle}
         isLiquidGlass={isLiquidGlass}
         isLan={isLan}
-        isEmbedOpen={isEmbedOpen}
       />
       
 
