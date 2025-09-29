@@ -109,6 +109,7 @@
 | `roles`       | Multi-select | ❌   | 用户权限（guest 等） |
 | `status`      | Select       | ❌   | 状态（显示/隐藏）    |
 | `category`    | Select       | ❌   | 分类名称             |
+| `target`      | Select       | ❌   | 打开方式（新标签页打开/当前标签页打开/弹框打开） |
 
 ### 图标优化
 

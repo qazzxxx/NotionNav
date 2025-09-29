@@ -110,7 +110,7 @@ function HomeContent() {
       e.preventDefault();
       setEmbedUrl(url);
       setShowEmbedModal(true);
-    } else if (target === "当前窗口打开") {
+    } else if (target === "当前标签页打开" || target === "当前窗口打开") {
       // 在当前标签页打开
       window.location.href = url;
     } else {
