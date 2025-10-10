@@ -74,3 +74,18 @@ export function getEnvironmentInfo() {
     isDevelopment: process.env.NODE_ENV === "development",
   };
 }
+
+/**
+ * 获取 Notion API Base URL
+ * 优先级：环境变量 > 默认值
+ */
+export function getNotionApiBaseUrl(): string {
+  const envApiBaseUrl = process.env.NOTION_API_BASE_URL;
+
+  if (envApiBaseUrl) {
+    return envApiBaseUrl;
+  }
+
+  const defaultApiBaseUrl = "https://www.notion.so/api/v3";
+  return defaultApiBaseUrl;
+}
