@@ -227,6 +227,8 @@ function extractDatabaseMetadata(database: NotionDatabase): DatabaseMetadata {
     return metadata;
   }
 
+  console.log("Database block", JSON.stringify(database));
+
   // 查找数据库页面本身
   for (const blockId of Object.keys(database.block)) {
     const block = database.block[blockId];
@@ -356,7 +358,7 @@ function extractDatabaseMetadata(database: NotionDatabase): DatabaseMetadata {
   }
 
   // 如果还没有找到封面，尝试从 collection.value.cover 读取
-  if (!metadata.cover && database.collection) {
+  if (database.collection) {
     const collectionId = Object.keys(database.collection)[0];
     const collection = database.collection[collectionId];
     if (collection?.value?.cover) {
