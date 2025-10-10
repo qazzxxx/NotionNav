@@ -35,18 +35,74 @@ export function getNotionAPIConfig() {
     return {
       activeUser,
       authToken: token,
-    };
+      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      kyOptions: {
+        // 全局 Ky 配置
+        hooks: {
+          beforeRequest: [
+            (request: Request) => {
+              const url = request.url.toString()
+              if (url.includes('/api/v3/syncRecordValues')) {
+                return new Request(
+                  url.replace('/api/v3/syncRecordValues', '/api/v3/syncRecordValuesMain'),
+                  request
+                )
+              }
+              return request
+            }
+          ]
+        }
+      }
+
+    }
   }
 
   // 如果只有 token，使用 token 配置
   if (token) {
     return {
       authToken: token,
-    };
+      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      kyOptions: {
+        // 全局 Ky 配置
+        hooks: {
+          beforeRequest: [
+            (request: Request) => {
+              const url = request.url.toString()
+              if (url.includes('/api/v3/syncRecordValues')) {
+                return new Request(
+                  url.replace('/api/v3/syncRecordValues', '/api/v3/syncRecordValuesMain'),
+                  request
+                )
+              }
+              return request
+            }
+          ]
+        }
+      }
+    }
   }
 
   // 如果都没有，返回 undefined（使用默认配置）
-  return undefined;
+  return {
+    userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    kyOptions: {
+      // 全局 Ky 配置
+      hooks: {
+        beforeRequest: [
+          (request: Request) => {
+            const url = request.url.toString()
+            if (url.includes('/api/v3/syncRecordValues')) {
+              return new Request(
+                url.replace('/api/v3/syncRecordValues', '/api/v3/syncRecordValuesMain'),
+                request
+              )
+            }
+            return request
+          }
+        ]
+      }
+    }
+  };
 }
 
 // Notion数据库属性映射
