@@ -32,7 +32,7 @@
 
 1. **获取 Notion 页面 ID**
 
-   - 📋 **[NotionNav 导航菜单模板](https://like-emmental-3d4.notion.site/219692535678800fbefffd8ae6924454?v=2196925356788073920e000c2a02bf98)**
+   - 📋 **[NotionNav 导航菜单模板](https://qazz.notion.site/219692535678800fbefffd8ae6924454?v=2196925356788073920e000c2a02bf98)**
 
      1. 点击上面的模板链接
      2. 点击右上角的 "复制" 按钮复制到你的 Notion 工作区
