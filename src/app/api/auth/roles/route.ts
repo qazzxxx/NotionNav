@@ -5,6 +5,7 @@ import {
   NOTION_PROPERTY_MAPPING,
   getNotionAPIConfig,
 } from "@/config/notion";
+import { adapterNotionBlockMap } from "@/utils/notion-adapter";
 import {
   NotionDatabase,
   NotionPropertyValue,
@@ -16,9 +17,13 @@ const api = new NotionAPI(getNotionAPIConfig());
 export async function GET(_request: NextRequest) {
   try {
     // 获取数据库中的所有角色
-    const database = (await api.getPage(
+    let database = (await api.getPage(
       NOTION_CONFIG.DEFAULT_PAGE_ID
     )) as NotionDatabase;
+
+    // 清理 Notion 数据结构
+    database = adapterNotionBlockMap(database);
+
     const allRoles = getAllRolesFromDatabase(database);
 
     return NextResponse.json({

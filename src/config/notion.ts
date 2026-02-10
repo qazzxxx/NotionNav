@@ -31,62 +31,7 @@ export function getNotionAPIConfig() {
   const token = getNotionToken();
   const activeUser = getNotionActiveUser();
 
-  // 如果同时有 token 和 activeUser，使用完整配置
-  if (token && activeUser) {
-    return {
-      apiBaseUrl: getNotionApiBaseUrl(),
-      activeUser,
-      authToken: token,
-      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      kyOptions: {
-        // 全局 Ky 配置
-        hooks: {
-          beforeRequest: [
-            (request: Request) => {
-              const url = request.url.toString()
-              if (url.includes('/api/v3/syncRecordValues')) {
-                return new Request(
-                  url.replace('/api/v3/syncRecordValues', '/api/v3/syncRecordValuesMain'),
-                  request
-                )
-              }
-              return request
-            }
-          ]
-        }
-      }
-
-    }
-  }
-
-  // 如果只有 token，使用 token 配置
-  if (token) {
-    return {
-      apiBaseUrl: getNotionApiBaseUrl(),
-      authToken: token,
-      userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      kyOptions: {
-        // 全局 Ky 配置
-        hooks: {
-          beforeRequest: [
-            (request: Request) => {
-              const url = request.url.toString()
-              if (url.includes('/api/v3/syncRecordValues')) {
-                return new Request(
-                  url.replace('/api/v3/syncRecordValues', '/api/v3/syncRecordValuesMain'),
-                  request
-                )
-              }
-              return request
-            }
-          ]
-        }
-      }
-    }
-  }
-
-  // 如果都没有，返回 undefined（使用默认配置）
-  return {
+  const commonConfig = {
     apiBaseUrl: getNotionApiBaseUrl(),
     userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     kyOptions: {
@@ -107,6 +52,26 @@ export function getNotionAPIConfig() {
       }
     }
   };
+
+  // 如果同时有 token 和 activeUser，使用完整配置
+  if (token && activeUser) {
+    return {
+      ...commonConfig,
+      activeUser,
+      authToken: token,
+    }
+  }
+
+  // 如果只有 token，使用 token 配置
+  if (token) {
+    return {
+      ...commonConfig,
+      authToken: token,
+    }
+  }
+
+  // 如果都没有，返回 undefined（使用默认配置）
+  return commonConfig;
 }
 
 // Notion数据库属性映射
