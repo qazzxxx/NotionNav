@@ -1,5 +1,6 @@
 import { NotionAPI } from "notion-client";
 import { getNotionAPIConfig } from "@/config/notion";
+import { adapterNotionBlockMap } from "@/utils/notion-adapter";
 
 const api = new NotionAPI(getNotionAPIConfig());
 
@@ -12,10 +13,13 @@ export default async function handler(req, res) {
     }
 
     // fetch database content
-    const database = await api.getPage(databaseId);
+    let database = await api.getPage(databaseId);
+    
+    // 清理 Notion 数据结构，适配新版 API 返回格式
+    database = adapterNotionBlockMap(database);
 
     // 解析数据库内容，提取菜单项
-    const menuItems = parseDatabaseToMenuItems(database);
+    const menuItems = parseDatabaseToMenuItems(database, databaseId);
 
     res.status(200).json({ menuItems });
   } catch (error) {
@@ -24,7 +28,7 @@ export default async function handler(req, res) {
   }
 }
 
-function parseDatabaseToMenuItems(database) {
+function parseDatabaseToMenuItems(database, databaseId) {
   const menuItems = [];
 
   // 遍历数据库的块
@@ -32,8 +36,23 @@ function parseDatabaseToMenuItems(database) {
     const block = database.block[blockId];
 
     // 检查是否是数据库项
-    if (block.type === "page" && block.parent_id === database.id) {
-      const page = database.block[blockId];
+    // 使用传入的 databaseId 作为 parent_id 的对比基准
+    // 如果 database 本身有 id 属性（通常 recordMap 没有），也可以作为 fallback
+    const targetId = databaseId || database.id;
+    
+    // 获取 collection ID（如果存在）
+    // 通常 collection_view_page 的 items 的 parent_id 指向 collection ID
+    const collectionId = database.collection ? Object.keys(database.collection)[0] : null;
+    
+    // 兼容 collection_view_page 的子页面
+    // 允许 parent_id 匹配 databaseId 或 collectionId
+    const isParentMatch = block.parent_id && (
+      block.parent_id.replaceAll('-', '') === targetId.replaceAll('-', '') ||
+      (collectionId && block.parent_id.replaceAll('-', '') === collectionId.replaceAll('-', ''))
+    );
+
+    if (block.type === "page" && isParentMatch) {
+      const page = block; // block 已经被展平，直接作为 page 使用
 
       // 提取页面属性
       const title =
